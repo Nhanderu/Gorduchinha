@@ -11,7 +11,7 @@ import (
 
 func Connect(user string, pass string, name string, host string, port int) (contract.DataManager, error) {
 
-	url := fmt.Sprintf("postgres://%s:%s@%s:%d/%s", user, pass, name, host, port)
+	url := fmt.Sprintf("postgres://%s:%s@%s:%d/%s", user, pass, host, port, name)
 	db, err := sql.Open("postgres", url)
 	if err != nil {
 		return nil, errors.WithStack(err)
