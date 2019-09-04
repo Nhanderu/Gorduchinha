@@ -24,8 +24,6 @@ func Connect(user string, pass string, name string, host string, port int) (cont
 	return p, nil
 }
 
-var _ contract.DataManager = &pool{}
-
 type pool struct {
 	repo
 	pool *sql.DB
