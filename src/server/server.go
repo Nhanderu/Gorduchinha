@@ -56,10 +56,11 @@ func registerRoutes(
 	open := router.group(serverPrefix, middleware.LoggerMiddleware(log))
 	open.handle(http.MethodGet, "/health", handler.HealthCheck())
 	open.handle(http.MethodGet, "/version", handler.ShowAppVersion(appVersion))
+	open.handle(http.MethodGet, "/graphql", handler.HandleGraphql(teamService, champService, scraperService))
 	open.handle(http.MethodGet, "/teams", handler.ListTeams(teamService))
 	open.handle(http.MethodGet, "/teams/:abbr", handler.FindTeamByAbbr(teamService))
 	open.handle(http.MethodGet, "/champs", handler.ListChamps(champService))
-	open.handle(http.MethodPut, "/champs", handler.RunScraper(scraperService))
+	open.handle(http.MethodPut, "/champs", handler.UpdateChamps(scraperService))
 	open.handle(http.MethodGet, "/champs/:slug", handler.FindChampBySlug(champService))
 
 	return router.requestHandler()
