@@ -2,23 +2,40 @@ package service
 
 import (
 	"bytes"
+	"net/http"
 	"regexp"
 	"strconv"
 
 	"github.com/Nhanderu/gorduchinha/src/domain"
+	"github.com/Nhanderu/gorduchinha/src/domain/contract"
 	"github.com/Nhanderu/gorduchinha/src/domain/entity"
+	"github.com/Nhanderu/gorduchinha/src/infra/logger"
 	"github.com/andybalholm/cascadia"
 	"github.com/pkg/errors"
 	"golang.org/x/net/html"
 )
 
 type scraperService struct {
-	svc *Service
+	data         contract.DataManager
+	log          logger.Logger
+	httpClient   *http.Client
+	teamService  contract.TeamService
+	champService contract.ChampService
 }
 
-func newScraperService(svc *Service) scraperService {
+func NewScraperService(
+	data contract.DataManager,
+	log logger.Logger,
+	httpClient *http.Client,
+	teamService contract.TeamService,
+	champService contract.ChampService,
+) contract.ScraperService {
 	return scraperService{
-		svc: svc,
+		data:         data,
+		log:          log,
+		httpClient:   httpClient,
+		teamService:  teamService,
+		champService: champService,
 	}
 }
 
@@ -29,7 +46,7 @@ func (s scraperService) ScrapeAndUpdate() error {
 		return errors.WithStack(err)
 	}
 
-	tx, err := s.svc.db.Begin()
+	tx, err := s.data.Begin()
 	if err != nil {
 		return errors.WithStack(err)
 	}
@@ -79,7 +96,7 @@ func (s scraperService) scrapeAll() ([]entity.Team, error) {
 	allTrophies := make(map[string][]entity.Trophy)
 	for champSlug, scraper := range scrapers {
 
-		champ, err := s.svc.Champ.FindBySlug(champSlug)
+		champ, err := s.champService.FindBySlug(champSlug)
 		if err != nil {
 			return nil, errors.WithStack(err)
 		}
@@ -103,7 +120,7 @@ func (s scraperService) scrapeAll() ([]entity.Team, error) {
 	teams := make([]entity.Team, 0)
 	for teamAbbr, trophies := range allTrophies {
 
-		team, err := s.svc.Team.FindByAbbr(teamAbbr)
+		team, err := s.teamService.FindByAbbr(teamAbbr)
 		if err != nil {
 			return nil, errors.WithStack(err)
 		}
@@ -138,7 +155,7 @@ func (s scraperService) scrape(champSlug string, url string, linesSel, teamSel, 
 
 	trophies := make(map[string][]int)
 
-	res, err := s.svc.httpClient.Get(url)
+	res, err := s.httpClient.Get(url)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
@@ -172,7 +189,7 @@ func (s scraperService) scrape(champSlug string, url string, linesSel, teamSel, 
 		for i := range teamTrophies {
 			teamTrophies[i], err = strconv.Atoi(years[i])
 			if err != nil {
-				s.svc.log.Errorf("Error scraping title %s for %s: %s.",
+				s.log.Errorf("Error scraping title %s for %s: %s.",
 					champSlug,
 					teamAbbr,
 					err.Error(),

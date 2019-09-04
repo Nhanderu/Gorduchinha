@@ -7,32 +7,33 @@ import (
 
 	"github.com/Nhanderu/gorduchinha/src/domain"
 	"github.com/Nhanderu/gorduchinha/src/domain/contract"
-	"github.com/Nhanderu/gorduchinha/src/infra/config"
 	"github.com/go-redis/redis"
 	"github.com/pkg/errors"
 )
 
-type RedisCache struct {
-	cfg   config.Config
-	redis *redis.Client
+type redisCache struct {
+	redis             *redis.Client
+	prefix            string
+	defaultExpiration time.Duration
 }
 
-func New(cfg config.Config) contract.CacheManager {
-	return &RedisCache{
-		cfg: cfg,
+func New(host string, port int, db int, pass string, prefix string, defaultExpiration time.Duration) contract.CacheManager {
+	return redisCache{
 		redis: redis.NewClient(&redis.Options{
-			Addr:     fmt.Sprintf("%s:%d", cfg.Cache.Host, cfg.Cache.Port),
-			Password: cfg.Cache.Pass,
-			DB:       cfg.Cache.DB,
+			Addr:     fmt.Sprintf("%s:%d", host, port),
+			Password: pass,
+			DB:       db,
 		}),
+		prefix:            prefix,
+		defaultExpiration: defaultExpiration,
 	}
 }
 
-func (r *RedisCache) buildKey(key string) string {
-	return r.cfg.Cache.Prefix + "-" + key
+func (r redisCache) buildKey(key string) string {
+	return r.prefix + "-" + key
 }
 
-func (r *RedisCache) CleanAll() error {
+func (r redisCache) CleanAll() error {
 
 	keys, err := r.redis.Keys(r.buildKey("*")).Result()
 	if err == redis.Nil {
@@ -55,7 +56,7 @@ func (r *RedisCache) CleanAll() error {
 	return nil
 }
 
-func (r *RedisCache) Invalidate(key string) error {
+func (r redisCache) Invalidate(key string) error {
 
 	err := r.redis.Del(r.buildKey(key)).Err()
 	if err == redis.Nil {
@@ -68,7 +69,7 @@ func (r *RedisCache) Invalidate(key string) error {
 	return nil
 }
 
-func (r *RedisCache) Get(key string) ([]byte, error) {
+func (r redisCache) Get(key string) ([]byte, error) {
 
 	val, err := r.redis.Get(r.buildKey(key)).Bytes()
 	if err == redis.Nil {
@@ -81,9 +82,9 @@ func (r *RedisCache) Get(key string) ([]byte, error) {
 	return val, nil
 }
 
-func (r *RedisCache) Set(key string, data []byte) error {
+func (r redisCache) Set(key string, data []byte) error {
 
-	err := r.redis.Set(r.buildKey(key), data, r.cfg.Cache.DefaultExpiration).Err()
+	err := r.redis.Set(r.buildKey(key), data, r.defaultExpiration).Err()
 	if err != nil {
 		return errors.WithStack(err)
 	}
@@ -91,7 +92,7 @@ func (r *RedisCache) Set(key string, data []byte) error {
 	return nil
 }
 
-func (r *RedisCache) GetJSON(key string, data interface{}) error {
+func (r redisCache) GetJSON(key string, data interface{}) error {
 
 	val, err := r.Get(key)
 	if err != nil {
@@ -106,7 +107,7 @@ func (r *RedisCache) GetJSON(key string, data interface{}) error {
 	return nil
 }
 
-func (r *RedisCache) SetJSON(key string, data interface{}) error {
+func (r redisCache) SetJSON(key string, data interface{}) error {
 
 	dataString, err := json.Marshal(data)
 	if err != nil {
@@ -121,7 +122,7 @@ func (r *RedisCache) SetJSON(key string, data interface{}) error {
 	return nil
 }
 
-func (r *RedisCache) GetExpiration(key string) (time.Duration, error) {
+func (r redisCache) GetExpiration(key string) (time.Duration, error) {
 
 	expiration, err := r.redis.TTL(r.buildKey(key)).Result()
 	if err != nil {
@@ -131,7 +132,7 @@ func (r *RedisCache) GetExpiration(key string) (time.Duration, error) {
 	return expiration, nil
 }
 
-func (r *RedisCache) SetExpiration(key string, expiration time.Duration) error {
+func (r redisCache) SetExpiration(key string, expiration time.Duration) error {
 
 	err := r.redis.Expire(r.buildKey(key), expiration).Err()
 	if err != nil {

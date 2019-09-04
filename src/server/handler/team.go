@@ -1,15 +1,15 @@
 package handler
 
 import (
-	"github.com/Nhanderu/gorduchinha/src/domain/service"
+	"github.com/Nhanderu/gorduchinha/src/domain/contract"
 	"github.com/Nhanderu/gorduchinha/src/server/handler/viewmodel"
 	"github.com/valyala/fasthttp"
 )
 
-func ListTeams(svc *service.Service) func(ctx *fasthttp.RequestCtx) {
+func ListTeams(teamService contract.TeamService) func(ctx *fasthttp.RequestCtx) {
 	return func(ctx *fasthttp.RequestCtx) {
 
-		teams, err := svc.Team.FindAll()
+		teams, err := teamService.FindAll()
 		if err != nil {
 			HandleError(ctx, err)
 			return
@@ -19,11 +19,11 @@ func ListTeams(svc *service.Service) func(ctx *fasthttp.RequestCtx) {
 	}
 }
 
-func FindTeamByAbbr(svc *service.Service) func(ctx *fasthttp.RequestCtx) {
+func FindTeamByAbbr(teamService contract.TeamService) func(ctx *fasthttp.RequestCtx) {
 	return func(ctx *fasthttp.RequestCtx) {
 
 		abbr, _ := ctx.UserValue("abbr").(string)
-		team, err := svc.Team.FindByAbbr(abbr)
+		team, err := teamService.FindByAbbr(abbr)
 		if err != nil {
 			HandleError(ctx, err)
 			return

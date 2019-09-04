@@ -3,16 +3,17 @@ package main
 import (
 	"fmt"
 	"io"
+	"net/http"
 	"os"
 	"os/signal"
 	"strconv"
 	"time"
 
 	"github.com/Nhanderu/gorduchinha/src/domain/service"
+	"github.com/Nhanderu/gorduchinha/src/infra/cache"
 	"github.com/Nhanderu/gorduchinha/src/infra/config"
 	"github.com/Nhanderu/gorduchinha/src/infra/logger"
-	"github.com/Nhanderu/gorduchinha/src/integration/cache"
-	"github.com/Nhanderu/gorduchinha/src/integration/data"
+	"github.com/Nhanderu/gorduchinha/src/data"
 	"github.com/Nhanderu/gorduchinha/src/server"
 )
 
@@ -35,12 +36,23 @@ func main() {
 	endAsErr(err, "Could not read configuration file.", os.Stdout, os.Stderr)
 
 	// Logging structure.
-	log, err := logger.New(cfg)
+	log, err := logger.New(
+		cfg.App.Name,
+		cfg.App.Version,
+		cfg.App.Debug,
+		cfg.Log.Path,
+	)
 	endAsErr(err, "Could not create logging structure.", os.Stdout, os.Stderr)
 
 	// Data manager.
 	log.Infof("Connecting to the database at %s:%d.", cfg.DB.Host, cfg.DB.Port)
-	db, err := data.Connect(cfg)
+	db, err := data.Connect(
+		cfg.DB.User,
+		cfg.DB.Pass,
+		cfg.DB.Name,
+		cfg.DB.Host,
+		cfg.DB.Port,
+	)
 	endAsErr(err, "Could not connect to database.", log.InfoWriter(), log.ErrorWriter())
 	atInterruption(func() {
 		log.Infof("Closing DB Connection.")
@@ -49,12 +61,24 @@ func main() {
 
 	// Cache manager.
 	log.Infof("Connecting to the cache server at %s:%d.", cfg.Cache.Host, cfg.Cache.Port)
-	cache := cache.New(cfg)
+	cache := cache.New(
+		cfg.Cache.Host,
+		cfg.Cache.Port,
+		cfg.Cache.DB,
+		cfg.Cache.Pass,
+		cfg.Cache.Prefix,
+		cfg.Cache.DefaultExpiration,
+	)
 	cache.CleanAll()
 
-	log.Infof("Starting service.")
-	svc := service.New(db, cache, cfg, log, nil, nil, nil)
-	server.Run(svc, cfg, log)
+	// HTTP client.
+	httpClient := &http.Client{Timeout: cfg.HTTPClient.Timeout}
+
+	// Services;
+	teamService := service.NewTeamService(db, cache)
+	champService := service.NewChampService(db, cache)
+	scraperService := service.NewScraperService(db, log, httpClient, teamService, champService)
+	server.Run(cfg.App.Version, cfg.Server.Port, cfg.Server.Prefix, log, teamService, champService, scraperService)
 }
 
 func atInterruption(fn func()) {

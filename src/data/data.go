@@ -5,21 +5,13 @@ import (
 	"fmt"
 
 	"github.com/Nhanderu/gorduchinha/src/domain/contract"
-	"github.com/Nhanderu/gorduchinha/src/infra/config"
 	_ "github.com/lib/pq"
 	"github.com/pkg/errors"
 )
 
-func Connect(cfg config.Config) (contract.DataManager, error) {
+func Connect(user string, pass string, name string, host string, port int) (contract.DataManager, error) {
 
-	url := fmt.Sprintf("postgres://%s:%s@%s:%d/%s",
-		cfg.DB.User,
-		cfg.DB.Pass,
-		cfg.DB.Host,
-		cfg.DB.Port,
-		cfg.DB.Name,
-	)
-
+	url := fmt.Sprintf("postgres://%s:%s@%s:%d/%s", user, pass, name, host, port)
 	db, err := sql.Open("postgres", url)
 	if err != nil {
 		return nil, errors.WithStack(err)

@@ -4,7 +4,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/Nhanderu/gorduchinha/src/infra/config"
 	"github.com/labstack/gommon/color"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
@@ -17,13 +16,13 @@ var (
 // coloredJSONFormatter formats output in JSON with colored strings
 type coloredJSONFormatter struct {
 	logrus.JSONFormatter
-	cfg config.Config
+	shouldColor bool
 }
 
 // Format formats the log output, coloring status and level fields if output is not in a file
 func (formatter *coloredJSONFormatter) Format(entry *logrus.Entry) ([]byte, error) {
 
-	if !formatter.cfg.Log.LogToFile {
+	if formatter.shouldColor {
 
 		level := entry.Level.String()
 		levelColor := strings.ToUpper(level)

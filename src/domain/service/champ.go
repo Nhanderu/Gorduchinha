@@ -4,17 +4,20 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/Nhanderu/gorduchinha/src/domain/contract"
 	"github.com/Nhanderu/gorduchinha/src/domain/entity"
 	"github.com/pkg/errors"
 )
 
 type champService struct {
-	svc *Service
+	data  contract.DataManager
+	cache contract.CacheManager
 }
 
-func newChampService(svc *Service) champService {
+func NewChampService(data contract.DataManager, cache contract.CacheManager) contract.ChampService {
 	return champService{
-		svc: svc,
+		data:  data,
+		cache: cache,
 	}
 }
 
@@ -23,16 +26,16 @@ func (s champService) FindAll() ([]entity.Champ, error) {
 	var champs []entity.Champ
 
 	cacheKey := "champ-find-all"
-	err := s.svc.cache.GetJSON(cacheKey, &champs)
+	err := s.cache.GetJSON(cacheKey, &champs)
 	if err != nil {
 
-		champs, err = s.svc.db.Champ().FindAll()
+		champs, err = s.data.Champ().FindAll()
 		if err != nil {
 			return nil, errors.WithStack(err)
 		}
 
-		s.svc.cache.SetJSON(cacheKey, champs)
-		s.svc.cache.SetExpiration(cacheKey, time.Hour*24*30)
+		s.cache.SetJSON(cacheKey, champs)
+		s.cache.SetExpiration(cacheKey, time.Hour*24*30)
 	}
 
 	return champs, nil
@@ -43,16 +46,16 @@ func (s champService) FindBySlug(slug string) (entity.Champ, error) {
 	var champ entity.Champ
 
 	cacheKey := fmt.Sprintf("champ-find-by-slug-%s", slug)
-	err := s.svc.cache.GetJSON(cacheKey, &champ)
+	err := s.cache.GetJSON(cacheKey, &champ)
 	if err != nil {
 
-		champ, err = s.svc.db.Champ().FindBySlug(slug)
+		champ, err = s.data.Champ().FindBySlug(slug)
 		if err != nil {
 			return champ, errors.WithStack(err)
 		}
 
-		s.svc.cache.SetJSON(cacheKey, champ)
-		s.svc.cache.SetExpiration(cacheKey, time.Hour*24*30)
+		s.cache.SetJSON(cacheKey, champ)
+		s.cache.SetExpiration(cacheKey, time.Hour*24*30)
 	}
 
 	return champ, nil
