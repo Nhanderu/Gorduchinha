@@ -1,0 +1,7 @@
+type Team {
+    name: String!
+}
+
+type Champ {
+    name: String!
+}

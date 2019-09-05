@@ -6,9 +6,10 @@ require (
 	github.com/andybalholm/cascadia v1.0.0
 	github.com/antchfx/xpath v1.0.0 // indirect
 	github.com/antchfx/xquery v0.0.0-20180515051857-ad5b8c7a47b0 // indirect
+	github.com/bhoriuchi/graphql-go-tools v0.0.0-20190712193604-1bc83d546ba2
 	github.com/fasthttp/router v0.3.4
 	github.com/go-redis/redis v6.15.2+incompatible
-	github.com/graphql-go/graphql v0.7.8 // indirect
+	github.com/graphql-go/graphql v0.7.8
 	github.com/labstack/gommon v0.2.9
 	github.com/lib/pq v1.1.1
 	github.com/onsi/ginkgo v1.8.0 // indirect
