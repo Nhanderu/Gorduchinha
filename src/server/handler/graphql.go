@@ -16,7 +16,6 @@ func HandleGraphql(
 ) func(ctx *fasthttp.RequestCtx) {
 
 	typedefs, _ := ioutil.ReadFile("static/graphql/schema.gql")
-
 	schema, _ := gqltools.MakeExecutableSchema(gqltools.ExecutableSchema{
 		TypeDefs: typedefs,
 		Resolvers: map[string]interface{}{

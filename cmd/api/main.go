@@ -9,11 +9,11 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/Nhanderu/gorduchinha/src/data"
 	"github.com/Nhanderu/gorduchinha/src/domain/service"
 	"github.com/Nhanderu/gorduchinha/src/infra/cache"
 	"github.com/Nhanderu/gorduchinha/src/infra/config"
 	"github.com/Nhanderu/gorduchinha/src/infra/logger"
-	"github.com/Nhanderu/gorduchinha/src/data"
 	"github.com/Nhanderu/gorduchinha/src/server"
 )
 
@@ -78,6 +78,7 @@ func main() {
 	teamService := service.NewTeamService(db, cache)
 	champService := service.NewChampService(db, cache)
 	scraperService := service.NewScraperService(db, log, httpClient, teamService, champService)
+	log.Infof("Running server at port %d.", cfg.Server.Port)
 	server.Run(cfg.App.Version, cfg.Server.Port, cfg.Server.Prefix, log, teamService, champService, scraperService)
 }
 
