@@ -1,3 +1,7 @@
+schema {
+    query: Query
+}
+
 type Query {
     team: Team
     champ: Champ
