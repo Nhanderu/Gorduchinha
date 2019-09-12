@@ -1,3 +1,8 @@
+type Query {
+    team: Team
+    champ: Champ
+}
+
 type Team {
     name: String!
 }
