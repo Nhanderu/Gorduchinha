@@ -50,6 +50,6 @@ func HandleGraphql(
 		var request viewmodel.GraphQLQueryRequest
 		json.Unmarshal(ctx.PostBody(), &request)
 
-		RespondOK(ctx, schema.Exec(context.TODO(), request.Query, request.OperationName, request.Variables))
+		RespondOK(ctx, schema.Exec(context.Background(), request.Query, request.OperationName, request.Variables))
 	}
 }
