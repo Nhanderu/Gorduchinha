@@ -42,7 +42,7 @@ func HandleGraphql(
 ) func(ctx *fasthttp.RequestCtx) {
 
 	typedefs, _ := ioutil.ReadFile("static/graphql/schema.gql")
-	schema, _ := graphql.ParseSchema(string(typedefs), Query{})
+	schema := graphql.MustParseSchema(string(typedefs), Query{})
 
 	return func(ctx *fasthttp.RequestCtx) {
 
