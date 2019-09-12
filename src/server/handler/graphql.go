@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"context"
 	"encoding/json"
 	"io/ioutil"
 
@@ -50,6 +49,6 @@ func HandleGraphql(
 		var request viewmodel.GraphQLQueryRequest
 		json.Unmarshal(ctx.PostBody(), &request)
 
-		RespondOK(ctx, schema.Exec(context.Background(), request.Query, request.OperationName, request.Variables))
+		RespondOK(ctx, schema.Exec(ctx, request.Query, request.OperationName, request.Variables))
 	}
 }
