@@ -1,9 +1,11 @@
 package handler
 
 import (
+	"encoding/json"
 	"io/ioutil"
 
 	"github.com/Nhanderu/gorduchinha/src/domain/contract"
+	"github.com/Nhanderu/gorduchinha/src/server/handler/viewmodel"
 	gqltools "github.com/bhoriuchi/graphql-go-tools"
 	"github.com/graphql-go/graphql"
 	"github.com/valyala/fasthttp"
@@ -37,9 +39,13 @@ func HandleGraphql(
 	})
 
 	return func(ctx *fasthttp.RequestCtx) {
+
+		var request viewmodel.GraphQLQueryRequest
+		json.Unmarshal(ctx.PostBody(), &request)
+
 		RespondOK(ctx, graphql.Do(graphql.Params{
 			Schema:        schema,
-			RequestString: string(ctx.PostBody()),
+			RequestString: request.Query,
 		}))
 	}
 }
