@@ -15,12 +15,12 @@ type Query struct {
 	champ Champ
 }
 
-func (q Query) Team() Team {
-	return q.team
+func (q Query) Team() *Team {
+	return &q.team
 }
 
-func (q Query) Champ() Champ {
-	return q.champ
+func (q Query) Champ() *Champ {
+	return &q.champ
 }
 
 type Team struct{}
