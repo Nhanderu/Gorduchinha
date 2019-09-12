@@ -6,10 +6,34 @@ import (
 
 	"github.com/Nhanderu/gorduchinha/src/domain/contract"
 	"github.com/Nhanderu/gorduchinha/src/server/handler/viewmodel"
-	gqltools "github.com/bhoriuchi/graphql-go-tools"
-	"github.com/graphql-go/graphql"
+	graphql "github.com/graph-gophers/graphql-go"
 	"github.com/valyala/fasthttp"
 )
+
+type Query struct {
+	team  Team
+	champ Champ
+}
+
+func (q Query) Team() Team {
+	return q.team
+}
+
+func (q Query) Champ() Champ {
+	return q.champ
+}
+
+type Team struct{}
+
+func (Team) Name() string {
+	return "name"
+}
+
+type Champ struct{}
+
+func (Champ) Name() string {
+	return "name"
+}
 
 func HandleGraphql(
 	teamService contract.TeamService,
@@ -18,34 +42,13 @@ func HandleGraphql(
 ) func(ctx *fasthttp.RequestCtx) {
 
 	typedefs, _ := ioutil.ReadFile("static/graphql/schema.gql")
-	schema, _ := gqltools.MakeExecutableSchema(gqltools.ExecutableSchema{
-		TypeDefs: typedefs,
-		Resolvers: map[string]interface{}{
-			"Team": &gqltools.ObjectResolver{
-				Fields: gqltools.FieldResolveMap{
-					"name": func(p graphql.ResolveParams) (interface{}, error) {
-						return "name", nil
-					},
-				},
-			},
-			"Champ": &gqltools.ObjectResolver{
-				Fields: gqltools.FieldResolveMap{
-					"name": func(p graphql.ResolveParams) (interface{}, error) {
-						return "name", nil
-					},
-				},
-			},
-		},
-	})
+	schema, _ := graphql.ParseSchema(string(typedefs), Query{})
 
 	return func(ctx *fasthttp.RequestCtx) {
 
 		var request viewmodel.GraphQLQueryRequest
 		json.Unmarshal(ctx.PostBody(), &request)
 
-		RespondOK(ctx, graphql.Do(graphql.Params{
-			Schema:        schema,
-			RequestString: request.Query,
-		}))
+		RespondOK(ctx, schema.Exec(nil, request.Query, request.OperationName, request.Variables))
 	}
 }
