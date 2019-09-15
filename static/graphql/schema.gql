@@ -18,7 +18,7 @@ type Team {
     abbr: String!
     name: String!
     full_name: String!
-    trophies: [Trophy!]!
+    trophies(champSlug: String): [Trophy!]!
 }
 
 type Trophy {

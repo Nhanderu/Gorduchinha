@@ -26,12 +26,18 @@ func (r TeamResolver) FullName() string {
 	return r.team.FullName
 }
 
-func (r TeamResolver) Trophies() []*TrophyResolver {
+func (r TeamResolver) Trophies(args *TrophyArgs) []*TrophyResolver {
 
 	resolvers := make([]*TrophyResolver, len(r.team.Trophies))
-	for i := range r.team.Trophies {
-		resolvers[i] = NewTrophyResolver(r.team.Trophies[i])
+	for i, trophy := range r.team.Trophies {
+		if args.ChampSlug == nil || *args.ChampSlug == trophy.Champ.Slug {
+			resolvers[i] = NewTrophyResolver(trophy)
+		}
 	}
 
 	return resolvers
+}
+
+type TrophyArgs struct {
+	ChampSlug *string
 }
