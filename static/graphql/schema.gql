@@ -3,16 +3,25 @@ schema {
 }
 
 type Query {
-    team(abbr: String!): Team
-    teams: [Team]
-    champ(slug: String!): Champ
-    champs: [Champ]
-}
-
-type Team {
-    name: String!
+    team(abbr: String!): Team!
+    teams: [Team!]!
+    champ(slug: String!): Champ!
+    champs: [Champ!]!
 }
 
 type Champ {
+    slug: String!
     name: String!
+}
+
+type Team {
+    abbr: String!
+    name: String!
+    full_name: String!
+    trophies: [Trophy!]!
+}
+
+type Trophy {
+    year: Int!
+    champ: Champ!
 }

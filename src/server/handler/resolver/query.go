@@ -2,7 +2,6 @@ package resolver
 
 import (
 	"github.com/Nhanderu/gorduchinha/src/domain/contract"
-	"github.com/Nhanderu/gorduchinha/src/domain/entity"
 )
 
 type QueryResolver struct {
@@ -17,15 +16,17 @@ func NewQueryResolver(teamService contract.TeamService, champService contract.Ch
 	}
 }
 
+type TeamArgs struct {
+	Abbr string
+}
+
 func (r QueryResolver) Team(args *TeamArgs) *TeamResolver {
 
 	team, _ := r.teamService.FindByAbbr(args.Abbr)
-	return &TeamResolver{
-		team: team,
-	}
+	return NewTeamResolver(team)
 }
 
-func (r QueryResolver) Teams() *[]*TeamResolver {
+func (r QueryResolver) Teams() []*TeamResolver {
 	teams, _ := r.teamService.FindAll()
 	resolvers := make([]*TeamResolver, len(teams))
 	for i := range teams {
@@ -34,18 +35,20 @@ func (r QueryResolver) Teams() *[]*TeamResolver {
 		}
 	}
 
-	return &resolvers
+	return resolvers
+}
+
+type ChampArgs struct {
+	Slug string
 }
 
 func (r QueryResolver) Champ(args *ChampArgs) *ChampResolver {
 
 	champ, _ := r.champService.FindBySlug(args.Slug)
-	return &ChampResolver{
-		champ: champ,
-	}
+	return NewChampResolver(champ)
 }
 
-func (r QueryResolver) Champs() *[]*ChampResolver {
+func (r QueryResolver) Champs() []*ChampResolver {
 	champs, _ := r.champService.FindAll()
 	resolvers := make([]*ChampResolver, len(champs))
 	for i := range champs {
@@ -54,29 +57,5 @@ func (r QueryResolver) Champs() *[]*ChampResolver {
 		}
 	}
 
-	return &resolvers
-}
-
-type TeamArgs struct {
-	Abbr string
-}
-
-type TeamResolver struct {
-	team entity.Team
-}
-
-func (r TeamResolver) Name() string {
-	return r.team.Name
-}
-
-type ChampArgs struct {
-	Slug string
-}
-
-type ChampResolver struct {
-	champ entity.Champ
-}
-
-func (r ChampResolver) Name() string {
-	return r.champ.Name
+	return resolvers
 }
