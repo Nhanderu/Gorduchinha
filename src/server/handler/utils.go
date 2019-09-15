@@ -55,6 +55,10 @@ func RespondValidationError(ctx *fasthttp.RequestCtx, code string) {
 	RespondError(ctx, http.StatusUnprocessableEntity, code)
 }
 
+func RespondRequestError(ctx *fasthttp.RequestCtx, code string) {
+	RespondError(ctx, http.StatusBadRequest, code)
+}
+
 func RespondInternalError(ctx *fasthttp.RequestCtx, code string) {
 	RespondError(ctx, http.StatusInternalServerError, code)
 }

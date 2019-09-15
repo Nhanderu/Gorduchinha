@@ -3,8 +3,10 @@ schema {
 }
 
 type Query {
-    team: Team
-    champ: Champ
+    team(abbr: String!): Team
+    teams: [Team]
+    champ(slug: String!): Champ
+    champs: [Champ]
 }
 
 type Team {
