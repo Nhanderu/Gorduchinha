@@ -24,6 +24,10 @@ type resultWrapperError struct {
 	Code string `json:"code,omitempty"`
 }
 
+func RespondGraphQL(ctx *fasthttp.RequestCtx, data interface{}) {
+	respondJSON(ctx, http.StatusOK, data)
+}
+
 func RespondOK(ctx *fasthttp.RequestCtx, data interface{}) {
 	respondJSON(ctx, http.StatusOK, resultWrapper{
 		Success: true,
