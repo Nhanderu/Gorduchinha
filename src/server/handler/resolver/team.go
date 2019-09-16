@@ -28,10 +28,10 @@ func (r TeamResolver) FullName() string {
 
 func (r TeamResolver) Trophies(args *TrophyArgs) []*TrophyResolver {
 
-	resolvers := make([]*TrophyResolver, len(r.team.Trophies))
-	for i, trophy := range r.team.Trophies {
+	resolvers := make([]*TrophyResolver, 0)
+	for _, trophy := range r.team.Trophies {
 		if args.ChampSlug == nil || *args.ChampSlug == trophy.Champ.Slug {
-			resolvers[i] = NewTrophyResolver(trophy)
+			resolvers = append(resolvers, NewTrophyResolver(trophy))
 		}
 	}
 
