@@ -27,6 +27,6 @@ func HandleGraphql(teamService contract.TeamService, champService contract.Champ
 		}
 
 		response := schema.Exec(ctx, request.Query, request.OperationName, request.Variables)
-		RespondOK(ctx, response)
+		RespondGraphQL(ctx, response)
 	}
 }
