@@ -53,7 +53,7 @@ func registerRoutes(
 
 	router := newRouter()
 
-	open := router.group(serverPrefix, middleware.LoggerMiddleware(log))
+	open := router.group(serverPrefix, middleware.LoggerMiddleware(log), middleware.CORSMiddleware())
 	open.handle(http.MethodGet, "/health", handler.HealthCheck())
 	open.handle(http.MethodGet, "/version", handler.ShowAppVersion(appVersion))
 	open.handle(http.MethodPost, "/graphql", handler.HandleGraphql(teamService, champService))
