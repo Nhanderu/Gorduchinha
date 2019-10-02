@@ -6,6 +6,8 @@ The code is a rewrite of an old project of mine. It's a API and scraper of Brazi
 
 I'm open for any suggestion or tip you can leave. Thanks! :)
 
+Enjoy!
+
 ## License
 
 This project code is in the public domain. See the [LICENSE file][1].
