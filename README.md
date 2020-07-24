@@ -1,10 +1,20 @@
 # Gorduchinha
 
-An attempt of mine to design a boilerplate for my personal Go projects (web servers, functions, etc.). It is still far for being complete, mostly because I'm lazy, but also because I'm trying some different designs, archs and libs.
+The Brazilian football teams API and scraper!
 
-The code is a rewrite of an old project of mine. It's a API and scraper of Brazilian soccer teams and championships.
+## Structure
 
-I'm open for any suggestion or tip you can leave. Thanks! :)
+### `app`
+
+This package contains the common code for all the applications
+
+### `cmd/api`
+
+Code for the API server. It depends on `app`.
+
+### `cmd/job-scraper`
+
+Code for the scraper bot. It depends on `app`.
 
 ## License
 

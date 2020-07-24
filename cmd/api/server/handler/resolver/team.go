@@ -1,0 +1,43 @@
+package resolver
+
+import (
+	"github.com/Nhanderu/gorduchinha/app/entity"
+)
+
+type TeamResolver struct {
+	team entity.Team
+}
+
+func NewTeamResolver(team entity.Team) *TeamResolver {
+	return &TeamResolver{
+		team: team,
+	}
+}
+
+func (r TeamResolver) Abbr() string {
+	return r.team.Abbr
+}
+
+func (r TeamResolver) Name() string {
+	return r.team.Name
+}
+
+func (r TeamResolver) FullName() string {
+	return r.team.FullName
+}
+
+func (r TeamResolver) Trophies(args *TrophyArgs) []*TrophyResolver {
+
+	resolvers := make([]*TrophyResolver, 0)
+	for _, trophy := range r.team.Trophies {
+		if args.ChampSlug == nil || *args.ChampSlug == trophy.Champ.Slug {
+			resolvers = append(resolvers, NewTrophyResolver(trophy))
+		}
+	}
+
+	return resolvers
+}
+
+type TrophyArgs struct {
+	ChampSlug *string
+}
