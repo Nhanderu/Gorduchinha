@@ -2,24 +2,12 @@ app:
   name: "gorduchinha"
   debug: false
 
-db:
-  host: ""
-  port: 0
-  user: ""
-  pass: ""
-  name: ""
-
 cache:
-  host: ""
-  port: 0
-  user: ""
-  pass: ""
   db: 0
   prefix: "gorduchinha"
   default-expiration: "24h"
 
 server:
-  port: 8080
   prefix: "/api/v1"
   max-requests-per-second: 10
   auth:

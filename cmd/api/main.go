@@ -21,7 +21,7 @@ func main() {
 	}
 
 	app := app.New(env, AppVersion)
-	if app.Config.Server.Port == 0 {
+	if serverPort != 0 {
 		app.Config.Server.Port = serverPort
 	}
 
