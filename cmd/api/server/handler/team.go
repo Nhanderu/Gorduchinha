@@ -15,7 +15,7 @@ func ListTeams(teamService contract.TeamService) func(ctx *fasthttp.RequestCtx) 
 			return
 		}
 
-		RespondOK(ctx, viewmodel.ParseTeamResponseList(teams))
+		respondOK(ctx, viewmodel.ParseTeamResponseList(teams))
 	}
 }
 
@@ -29,6 +29,6 @@ func FindTeamByAbbr(teamService contract.TeamService) func(ctx *fasthttp.Request
 			return
 		}
 
-		RespondOK(ctx, viewmodel.ParseTeamResponse(team))
+		respondOK(ctx, viewmodel.ParseTeamResponse(team))
 	}
 }

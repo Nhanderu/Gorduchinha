@@ -6,12 +6,12 @@ import (
 
 func ShowAppVersion(version string) func(ctx *fasthttp.RequestCtx) {
 	return func(ctx *fasthttp.RequestCtx) {
-		RespondOK(ctx, version)
+		respondOK(ctx, version)
 	}
 }
 
 func HealthCheck() func(ctx *fasthttp.RequestCtx) {
 	return func(ctx *fasthttp.RequestCtx) {
-		RespondNoContent(ctx)
+		respondOK(ctx, nil)
 	}
 }

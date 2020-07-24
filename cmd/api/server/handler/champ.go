@@ -15,7 +15,7 @@ func ListChamps(champService contract.ChampService) func(ctx *fasthttp.RequestCt
 			return
 		}
 
-		RespondOK(ctx, viewmodel.ParseChampResponseList(champs))
+		respondOK(ctx, viewmodel.ParseChampResponseList(champs))
 	}
 }
 
@@ -29,7 +29,7 @@ func FindChampBySlug(champService contract.ChampService) func(ctx *fasthttp.Requ
 			return
 		}
 
-		RespondOK(ctx, viewmodel.ParseChampResponse(champ))
+		respondOK(ctx, viewmodel.ParseChampResponse(champ))
 	}
 }
 
@@ -42,6 +42,6 @@ func UpdateChamps(scraperService contract.ScraperService) func(ctx *fasthttp.Req
 			return
 		}
 
-		RespondNoContent(ctx)
+		respondOK(ctx, nil)
 	}
 }

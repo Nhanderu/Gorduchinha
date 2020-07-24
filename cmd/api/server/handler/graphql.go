@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"io/ioutil"
+	"net/http"
 
 	"github.com/Nhanderu/gorduchinha/app/contract"
 	"github.com/Nhanderu/gorduchinha/cmd/api/server/handler/resolver"
@@ -22,11 +23,15 @@ func HandleGraphql(teamService contract.TeamService, champService contract.Champ
 		var request viewmodel.GraphQLQueryRequest
 		err := json.Unmarshal(ctx.PostBody(), &request)
 		if err != nil {
-			RespondRequestError(ctx, "invalid body")
+			respondRequestError(ctx, "invalid body")
 			return
 		}
 
-		response := schema.Exec(ctx, request.Query, request.OperationName, request.Variables)
-		RespondGraphQL(ctx, response)
+		respond(
+			ctx,
+			"application/graphql",
+			http.StatusOK,
+			schema.Exec(ctx, request.Query, request.OperationName, request.Variables),
+		)
 	}
 }
