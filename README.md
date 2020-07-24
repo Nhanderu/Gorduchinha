@@ -12,9 +12,13 @@ This package contains the common code for all the applications
 
 Code for the API server. It depends on `app`.
 
+To run it, execute `go run ./cmd/api`.
+
 ### `cmd/job-scraper`
 
 Code for the scraper bot. It depends on `app`.
+
+To run it, execute `go run ./cmd/job-scraper`.
 
 ## License
 
