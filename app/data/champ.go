@@ -58,7 +58,8 @@ func (r champRepo) FindBySlug(slug string) (entity.Champ, error) {
 	`
 
 	var champ entity.Champ
-	err := r.ex.QueryRow(query,
+	err := r.ex.QueryRow(
+		query,
 		slug,
 	).Scan(
 		&champ.ID,

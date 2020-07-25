@@ -27,10 +27,10 @@ func Run(
 	open.handle(http.MethodGet, "/health", handler.HealthCheck())
 	open.handle(http.MethodPost, "/graphql", handler.HandleGraphql(teamService, champService))
 	open.handle(http.MethodGet, "/teams", handler.ListTeams(teamService))
-	open.handle(http.MethodGet, "/teams/:abbr", handler.FindTeamByAbbr(teamService))
+	open.handle(http.MethodGet, "/teams/{abbr}", handler.FindTeamByAbbr(teamService))
 	open.handle(http.MethodGet, "/champs", handler.ListChamps(champService))
 	open.handle(http.MethodPut, "/champs", handler.UpdateChamps(scraperService))
-	open.handle(http.MethodGet, "/champs/:slug", handler.FindChampBySlug(champService))
+	open.handle(http.MethodGet, "/champs/{slug}", handler.FindChampBySlug(champService))
 
 	address := fmt.Sprintf(":%d", serverPort)
 	err := fasthttp.ListenAndServe(address, router.requestHandler())

@@ -21,7 +21,6 @@ type TeamArgs struct {
 }
 
 func (r QueryResolver) Team(args *TeamArgs) *TeamResolver {
-
 	team, _ := r.teamService.FindByAbbr(args.Abbr)
 	return NewTeamResolver(team)
 }
@@ -43,7 +42,6 @@ type ChampArgs struct {
 }
 
 func (r QueryResolver) Champ(args *ChampArgs) *ChampResolver {
-
 	champ, _ := r.champService.FindBySlug(args.Slug)
 	return NewChampResolver(champ)
 }

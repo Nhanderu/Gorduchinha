@@ -61,7 +61,8 @@ func (r teamRepo) FindByAbbr(abbr string) (entity.Team, error) {
 	`
 
 	var team entity.Team
-	err := r.ex.QueryRow(query,
+	err := r.ex.QueryRow(
+		query,
 		abbr,
 	).Scan(
 		&team.ID,
