@@ -27,11 +27,6 @@ func HandleGraphql(teamService contract.TeamService, champService contract.Champ
 			return
 		}
 
-		respond(
-			ctx,
-			"application/graphql",
-			http.StatusOK,
-			schema.Exec(ctx, request.Query, request.OperationName, request.Variables),
-		)
+		respondJSON(ctx, http.StatusOK, schema.Exec(ctx, request.Query, request.OperationName, request.Variables))
 	}
 }

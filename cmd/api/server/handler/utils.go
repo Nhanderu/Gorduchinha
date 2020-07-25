@@ -95,11 +95,7 @@ func respondError(ctx *fasthttp.RequestCtx, status int, code string) {
 }
 
 func respondJSON(ctx *fasthttp.RequestCtx, code int, result interface{}) {
-	respond(ctx, "app/json; charset=UTF-8", code, result)
-}
-
-func respond(ctx *fasthttp.RequestCtx, contentType string, code int, result interface{}) {
-	ctx.SetContentType(contentType)
+	ctx.SetContentType("app/json; charset=UTF-8")
 	ctx.SetStatusCode(code)
 	json.NewEncoder(ctx).Encode(result)
 }
