@@ -23,7 +23,7 @@ server:
   max-requests-per-second: 10
   auth:
     clients-urls:
-      - "*"
+      - "https://classicos.info"
 
 log:
   log-to-file: false
