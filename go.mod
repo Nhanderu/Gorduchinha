@@ -3,7 +3,7 @@ module github.com/Nhanderu/gorduchinha
 go 1.15
 
 require (
-	github.com/AdhityaRamadhanus/fasthttpcors v0.0.0-20170121111917-d4c07198763a
+	github.com/Nhanderu/fasthttpcors v0.0.0-20200725145909-b48303e86dfb
 	github.com/andybalholm/cascadia v1.2.0
 	github.com/fasthttp/router v1.2.4
 	github.com/go-redis/redis v6.15.8+incompatible

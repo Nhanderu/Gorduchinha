@@ -3,14 +3,15 @@ package middleware
 import (
 	"net/http"
 
-	cors "github.com/AdhityaRamadhanus/fasthttpcors"
+	"github.com/Nhanderu/fasthttpcors"
 )
 
 func CORSMiddleware(serverAuthClientsURLs []string) RequestMiddleware {
-	return cors.NewCorsHandler(cors.Options{
+	return fasthttpcors.NewCorsHandler(fasthttpcors.Options{
 		AllowedOrigins:   serverAuthClientsURLs,
+		AllowedHeaders:   []string{"Origin", "Accept", "Content-Type"},
 		AllowedMethods:   []string{http.MethodGet, http.MethodPost, http.MethodPut},
 		AllowCredentials: false,
-		AllowMaxAge:      5600,
+		AllowMaxAge:      60 * 60 * 24 * 30,
 	}).CorsMiddleware
 }
