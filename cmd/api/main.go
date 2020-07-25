@@ -19,6 +19,7 @@ func main() {
 	err := server.Run(
 		app.Config.Server.Port,
 		app.Config.Server.Prefix,
+		app.Config.Server.Auth.ClientsURLs,
 		app.Logger,
 		app.Services().NewTeam(),
 		app.Services().NewChamp(),

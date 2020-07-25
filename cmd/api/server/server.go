@@ -15,6 +15,7 @@ import (
 func Run(
 	serverPort int,
 	serverPrefix string,
+	serverAuthClientsURLs []string,
 	log logger.Logger,
 	teamService contract.TeamService,
 	champService contract.ChampService,
@@ -26,7 +27,7 @@ func Run(
 	open := router.group(
 		serverPrefix,
 		middleware.LoggerMiddleware(log),
-		middleware.CORSMiddleware(),
+		middleware.CORSMiddleware(serverAuthClientsURLs),
 	)
 
 	open.handle(http.MethodGet, "/health", handler.HealthCheck())
