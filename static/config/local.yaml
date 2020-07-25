@@ -1,6 +1,6 @@
 app:
   name: "gorduchinha"
-  debug: false
+  debug: true
 
 db:
   host: "ec2-75-101-147-226.compute-1.amazonaws.com"
@@ -10,11 +10,11 @@ db:
   name: "d3mepvnu36l0ku"
 
 cache:
-  host: ""
-  port: 0
-  user: ""
-  pass: ""
-  db: 0
+  host:
+  port:
+  user:
+  pass:
+  db:
   prefix: "gorduchinha"
   default-expiration: "24h"
 
