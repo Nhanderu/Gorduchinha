@@ -22,15 +22,13 @@ type App struct {
 	HTTPClient   *http.Client
 }
 
-func New(env string, appVersion string) App {
+func New(env string) App {
 
 	cfg, err := config.Read(env)
-	cfg.App.Version = appVersion
 	endAsErr(err, "Could not read configuration file.", os.Stdout, os.Stderr)
 
 	log, err := logger.New(
 		cfg.App.Name,
-		cfg.App.Version,
 		cfg.App.Debug,
 		cfg.Log.Path,
 	)

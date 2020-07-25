@@ -12,7 +12,7 @@ type logrusLogger struct {
 	entry *logrus.Entry
 }
 
-func New(appName string, appVersion string, debug bool, filepath string) (Logger, error) {
+func New(appName string, debug bool, filepath string) (Logger, error) {
 
 	shouldColor := true
 	if filepath != "" {
@@ -38,9 +38,8 @@ func New(appName string, appVersion string, debug bool, filepath string) (Logger
 
 	hostname, _ := os.Hostname()
 	entry := logrus.WithFields(logrus.Fields{
-		"app-name":    appName,
-		"app-version": appVersion,
-		"hostname":    hostname,
+		"app-name": appName,
+		"hostname": hostname,
 	})
 
 	return logrusLogger{

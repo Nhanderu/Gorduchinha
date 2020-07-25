@@ -13,7 +13,6 @@ import (
 )
 
 func Run(
-	appVersion string,
 	serverPort int,
 	serverPrefix string,
 	log logger.Logger,
@@ -21,33 +20,6 @@ func Run(
 	champService contract.ChampService,
 	scraperService contract.ScraperService,
 ) error {
-
-	address := fmt.Sprintf(":%d", serverPort)
-	router := registerRoutes(
-		appVersion,
-		serverPrefix,
-		log,
-		teamService,
-		champService,
-		scraperService,
-	)
-
-	err := fasthttp.ListenAndServe(address, router)
-	if err != nil {
-		return errors.WithStack(err)
-	}
-
-	return nil
-}
-
-func registerRoutes(
-	appVersion string,
-	serverPrefix string,
-	log logger.Logger,
-	teamService contract.TeamService,
-	champService contract.ChampService,
-	scraperService contract.ScraperService,
-) fasthttp.RequestHandler {
 
 	router := newRouter()
 
@@ -60,5 +32,11 @@ func registerRoutes(
 	open.handle(http.MethodPut, "/champs", handler.UpdateChamps(scraperService))
 	open.handle(http.MethodGet, "/champs/:slug", handler.FindChampBySlug(champService))
 
-	return router.requestHandler()
+	address := fmt.Sprintf(":%d", serverPort)
+	err := fasthttp.ListenAndServe(address, router.requestHandler())
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	return nil
 }

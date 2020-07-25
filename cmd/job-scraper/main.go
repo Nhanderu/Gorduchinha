@@ -6,10 +6,6 @@ import (
 	"github.com/Nhanderu/gorduchinha/app"
 )
 
-var (
-	AppVersion string
-)
-
 func main() {
 
 	env := os.Getenv("ENV")
@@ -17,7 +13,7 @@ func main() {
 		env = "local"
 	}
 
-	app := app.New(env, AppVersion)
+	app := app.New(env)
 	err := app.Services().NewScraper().ScrapeAndUpdate()
 	app.EndAsErr(err, "Could not execute service.", app.Logger.InfoWriter(), app.Logger.ErrorWriter())
 }
