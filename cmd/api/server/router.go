@@ -1,6 +1,8 @@
 package server
 
 import (
+	"net/http"
+
 	"github.com/Nhanderu/gorduchinha/cmd/api/server/middleware"
 	"github.com/fasthttp/router"
 	"github.com/valyala/fasthttp"
@@ -32,9 +34,18 @@ func (root *r) group(prefix string, mws ...middleware.RequestMiddleware) *r {
 }
 
 func (root *r) handle(method, path string, handler fasthttp.RequestHandler) {
-	root.router.Handle(
-		method,
-		root.prefix+path,
-		middleware.Use(handler, root.mw...),
-	)
+	p := root.prefix + path
+	root.router.Handle(method, p, middleware.Use(handler, root.mw...))
+
+	_, registered := preflightRegistered[p]
+	if !registered {
+		root.router.Handle(http.MethodOptions, p, middleware.Use(preflightHandler, root.mw...))
+		preflightRegistered[p] = struct{}{}
+	}
 }
+
+var (
+	preflightRegistered = map[string]struct{}{}
+)
+
+func preflightHandler(ctx *fasthttp.RequestCtx) {}
