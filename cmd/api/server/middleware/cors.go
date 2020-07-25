@@ -13,6 +13,5 @@ func CORSMiddleware(serverAuthClientsURLs []string) RequestMiddleware {
 		AllowedMethods:   []string{http.MethodGet, http.MethodPost, http.MethodPut},
 		AllowCredentials: false,
 		AllowMaxAge:      5600,
-		Debug:            true,
 	}).CorsMiddleware
 }
