@@ -3,11 +3,11 @@ module github.com/Nhanderu/gorduchinha
 go 1.15
 
 require (
-	github.com/Nhanderu/fasthttpcors v0.0.0-20200725145909-b48303e86dfb
 	github.com/andybalholm/cascadia v1.2.0
 	github.com/fasthttp/router v1.2.4
 	github.com/go-redis/redis v6.15.8+incompatible
 	github.com/graph-gophers/graphql-go v0.0.0-20200622220639-c1d9693c95a6
+	github.com/henkman/fasthttpcors v0.0.0-20200725182421-ea6a2f9c20dd
 	github.com/klauspost/compress v1.10.10 // indirect
 	github.com/labstack/gommon v0.3.0
 	github.com/lib/pq v1.7.1

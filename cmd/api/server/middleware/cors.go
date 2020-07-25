@@ -3,7 +3,7 @@ package middleware
 import (
 	"net/http"
 
-	"github.com/Nhanderu/fasthttpcors"
+	"github.com/henkman/fasthttpcors"
 )
 
 func CORSMiddleware(serverAuthClientsURLs []string) RequestMiddleware {
