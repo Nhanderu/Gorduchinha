@@ -1,6 +1,8 @@
 package server
 
 import (
+	"net/http"
+
 	"github.com/Nhanderu/gorduchinha/cmd/api/server/middleware"
 	"github.com/fasthttp/router"
 	"github.com/valyala/fasthttp"
@@ -32,5 +34,8 @@ func (root *r) group(prefix string, mws ...middleware.RequestMiddleware) *r {
 }
 
 func (root *r) handle(method, path string, handler fasthttp.RequestHandler) {
-	root.router.Handle(method, root.prefix+path, middleware.Use(handler, root.mw...))
+	fullPath := root.prefix + path
+	mws := middleware.Use(handler, root.mw...)
+	root.router.Handle(method, fullPath, mws)
+	root.router.Handle(http.MethodOptions, fullPath, mws)
 }

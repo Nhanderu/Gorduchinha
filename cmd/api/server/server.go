@@ -23,7 +23,12 @@ func Run(
 
 	router := newRouter()
 
-	open := router.group(serverPrefix, middleware.LoggerMiddleware(log), middleware.CORSMiddleware())
+	open := router.group(
+		serverPrefix,
+		middleware.LoggerMiddleware(log),
+		middleware.CORSMiddleware(),
+	)
+
 	open.handle(http.MethodGet, "/health", handler.HealthCheck())
 	open.handle(http.MethodPost, "/graphql", handler.HandleGraphql(teamService, champService))
 	open.handle(http.MethodGet, "/teams", handler.ListTeams(teamService))
