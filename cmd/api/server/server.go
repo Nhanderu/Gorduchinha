@@ -36,11 +36,6 @@ func Run(
 		middleware.RateLimit(cache, rateLimitPeriod, rateLimitLimit),
 	)
 
-	// TODO: add middlewares for
-	// - body limit
-	// - secure (?)
-	// - XSS
-
 	open.handle(http.MethodGet, "/health", handler.HealthCheck())
 	open.handle(http.MethodPost, "/graphql", handler.HandleGraphql(teamService, champService))
 	open.handle(http.MethodGet, "/teams", handler.ListTeams(teamService))

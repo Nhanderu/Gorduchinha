@@ -93,8 +93,11 @@ func respondOK(ctx *fasthttp.RequestCtx, data interface{}) {
 }
 
 func respondJSON(ctx *fasthttp.RequestCtx, code int, result interface{}) {
-	ctx.SetContentType("app/json; charset=UTF-8")
 	ctx.Response.Header.Add("Content-Encoding", "gzip")
+	ctx.Response.Header.Add("X-XSS-Protection", "1; mode=block")
+	ctx.Response.Header.Add("X-Content-Type-Options", "nosniff")
+	ctx.Response.Header.Add("Strict-Transport-Security", "max-age=31536000; includeSubDomains")
+	ctx.SetContentType("app/json; charset=UTF-8")
 	ctx.SetStatusCode(code)
 	b, _ := json.Marshal(result)
 	fasthttp.WriteGzipLevel(ctx, b, fasthttp.CompressBestSpeed)
