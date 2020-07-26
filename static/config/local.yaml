@@ -3,18 +3,18 @@ app:
   debug: true
 
 db:
-  host: "ec2-75-101-147-226.compute-1.amazonaws.com"
-  port: 5432
-  user: "lkfgqzagwtkkla"
-  pass: "3198b34d11578f47cabc86fc7cb59a80bbe4699f2bf975fb14299b6439509768"
-  name: "d3mepvnu36l0ku"
+  host:
+  port:
+  user:
+  pass:
+  name:
 
 cache:
   host:
   port:
   user:
   pass:
-  db:
+  db: 0
   prefix: "gorduchinha"
   default-expiration: "24h"
 

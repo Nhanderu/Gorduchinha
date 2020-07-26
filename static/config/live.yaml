@@ -13,7 +13,7 @@ cache:
   port:
   user:
   pass:
-  db:
+  db: 0
   prefix: "gorduchinha"
   default-expiration: "24h"
 
