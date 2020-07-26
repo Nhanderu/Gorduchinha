@@ -1,38 +1,78 @@
 package constant
 
-import (
-	"fmt"
-	"net/http"
-)
-
-type errorString string
-
-func (err errorString) Error() string {
-	return string(err)
-}
+import "fmt"
 
 const (
-	ErrNotFound      = errorString("resource not found")
-	ErrCacheMiss     = errorString("miss from cache")
-	ErrNotAuthorized = errorString("access unauthorized")
+
+	// ErrorCodeNotFound means that a resource was not found.
+	ErrorCodeNotFound = "not-found"
+
+	// ErrorCodeCacheMiss indicates a cache miss when fetching an item from CacheManager.
+	ErrorCodeCacheMiss = "cache-miss"
+
+	// ErrorCodeTooManyRequests means that an IP is sending too much requests and we're
+	// blocking it.
+	ErrorCodeTooManyRequests = "too-many-requests"
+
+	// ErrorCodeInvalidRequestBody means that the HTTP request body has an invalid
+	// format.
+	ErrorCodeInvalidRequestBody = "invalid-request-body"
+
+	// ErrorCodeInternal means any general internal error.
+	ErrorCodeInternal = "internal"
 )
 
-type ValidationError struct {
+type AppError struct {
+	Code  string
 	Field string
 }
 
-var _ error = ValidationError{}
-
-func (e ValidationError) Error() string {
-	return fmt.Sprintf(`field "%s" is invalid`, e.Field)
+func (e AppError) Error() string {
+	if e.Field != "" {
+		return fmt.Sprintf("error code %s on field %s", e.Code, e.Field)
+	}
+	return fmt.Sprintf("error code %s", e.Code)
 }
 
-type HTTPError struct {
-	Status int
+func (e AppError) Extensions() map[string]interface{} {
+
+	m := make(map[string]interface{})
+	m["code"] = e.Code
+
+	if e.Field != "" {
+		m["field"] = e.Field
+	}
+
+	return m
 }
 
-var _ error = HTTPError{}
+func NewErrorNotFound(field string) AppError {
+	return AppError{
+		Field: field,
+		Code:  ErrorCodeNotFound,
+	}
+}
 
-func (e HTTPError) Error() string {
-	return http.StatusText(e.Status)
+func NewErrorCacheMiss() AppError {
+	return AppError{
+		Code: ErrorCodeCacheMiss,
+	}
+}
+
+func NewErrorTooManyRequests() AppError {
+	return AppError{
+		Code: ErrorCodeTooManyRequests,
+	}
+}
+
+func NewErrorInvalidRequestBody() AppError {
+	return AppError{
+		Code: ErrorCodeInvalidRequestBody,
+	}
+}
+
+func NewErrorInternal() AppError {
+	return AppError{
+		Code: ErrorCodeInternal,
+	}
 }

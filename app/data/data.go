@@ -19,7 +19,7 @@ func Connect(user string, pass string, name string, host string, port int) (cont
 
 	p := new(pool)
 	p.pool = db
-	p.repo = newRepo(db)
+	p.repo = repo{db}
 
 	return p, nil
 }
@@ -38,7 +38,7 @@ func (p *pool) Begin() (contract.TransactionManager, error) {
 
 	t := new(transaction)
 	t.transaction = tx
-	t.repo = newRepo(tx)
+	t.repo = repo{tx}
 
 	return t, nil
 }
@@ -91,34 +91,17 @@ func (t *transaction) Commit() error {
 var _ contract.RepoManager = repo{}
 
 type repo struct {
-	champ  champRepo
-	team   teamRepo
-	trophy trophyRepo
-}
-
-func newRepo(ex executor) repo {
-
-	var r repo
-	r.champ = champRepo{ex}
-	r.team = teamRepo{ex}
-	r.trophy = trophyRepo{ex}
-	return r
+	ex executor
 }
 
 func (r repo) Champ() contract.ChampRepo {
-	return r.champ
+	return newChampRepo(r.ex)
 }
 
 func (r repo) Team() contract.TeamRepo {
-	return r.team
+	return newTeamRepo(r.ex)
 }
 
 func (r repo) Trophy() contract.TrophyRepo {
-	return r.trophy
-}
-
-type executor interface {
-	Exec(query string, args ...interface{}) (sql.Result, error)
-	QueryRow(query string, args ...interface{}) *sql.Row
-	Query(query string, args ...interface{}) (*sql.Rows, error)
+	return newTrophyRepo(r.ex)
 }

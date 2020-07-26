@@ -2,18 +2,82 @@ package data
 
 import (
 	"bytes"
+	"database/sql"
 	"fmt"
 	"strings"
 
+	"github.com/Nhanderu/gorduchinha/app/contract"
 	"github.com/Nhanderu/gorduchinha/app/entity"
 	"github.com/pkg/errors"
 )
 
 type trophyRepo struct {
-	ex executor
+	ex           executor
+	entity       string
+	selectFields string
 }
 
-func (r trophyRepo) FindByTeamID(teamID int) ([]entity.Trophy, error) {
+func newTrophyRepo(ex executor) contract.TrophyRepo {
+	return trophyRepo{
+		ex:     ex,
+		entity: "trophy",
+		selectFields: `
+			t.id
+			, t.created_at
+			, t.updated_at
+			, t.uuid
+			, t.year
+			, c.id
+			, c.created_at
+			, c.updated_at
+			, c.slug
+			, c.name
+		`,
+	}
+}
+
+func (r trophyRepo) parseEntities(rows *sql.Rows, err error) ([]entity.Trophy, error) {
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+
+	trophies := make([]entity.Trophy, 0)
+	for rows.Next() {
+
+		trophy, err := r.parseEntity(rows)
+		if err != nil {
+			return nil, errors.WithStack(err)
+		}
+
+		trophies = append(trophies, trophy)
+	}
+
+	return trophies, nil
+}
+
+func (r trophyRepo) parseEntity(s scanner) (entity.Trophy, error) {
+
+	var trophy entity.Trophy
+	err := s.Scan(
+		&trophy.ID,
+		&trophy.CreatedAt,
+		&trophy.UpdatedAt,
+		&trophy.UUID,
+		&trophy.Year,
+		&trophy.Champ.ID,
+		&trophy.Champ.CreatedAt,
+		&trophy.Champ.UpdatedAt,
+		&trophy.Champ.Slug,
+		&trophy.Champ.Name,
+	)
+	if err != nil {
+		return entity.Trophy{}, errors.WithStack(err)
+	}
+
+	return trophy, nil
+}
+
+func (r trophyRepo) FindByTeamID(teamID uint32) ([]entity.Trophy, error) {
 	const query = `
 		SELECT
 			t.id
@@ -30,30 +94,11 @@ func (r trophyRepo) FindByTeamID(teamID int) ([]entity.Trophy, error) {
 		;
 	`
 
-	trophies := make([]entity.Trophy, 0)
-	rows, err := r.ex.Query(query,
+	trophies, err := r.parseEntities(r.ex.Query(query,
 		teamID,
-	)
+	))
 	if err != nil {
-		return nil, errors.WithStack(parseError(err))
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-
-		var trophy entity.Trophy
-		err = rows.Scan(
-			&trophy.ID,
-			&trophy.Year,
-			&trophy.Champ.ID,
-			&trophy.Champ.Slug,
-			&trophy.Champ.Name,
-		)
-		if err != nil {
-			return nil, errors.WithStack(parseError(err))
-		}
-
-		trophies = append(trophies, trophy)
+		return nil, errors.WithStack(parseError(err, r.entity))
 	}
 
 	return trophies, nil
@@ -74,7 +119,7 @@ func (r trophyRepo) BulkInsertByTeams(teams []entity.Team) error {
 
 	var count int
 	params := []interface{}{}
-	values := bytes.NewBufferString("")
+	values := bytes.NewBuffer(nil)
 
 	for i := range teams {
 		for j := range teams[i].Trophies {
@@ -97,7 +142,7 @@ func (r trophyRepo) BulkInsertByTeams(teams []entity.Team) error {
 	q := fmt.Sprintf(query, strings.TrimSuffix(values.String(), ","))
 	_, err := r.ex.Exec(q, params...)
 	if err != nil {
-		return errors.WithStack(parseError(err))
+		return errors.WithStack(parseError(err, r.entity))
 	}
 
 	return nil
@@ -113,7 +158,7 @@ func (r trophyRepo) DeleteAll() error {
 
 	_, err := r.ex.Exec(query)
 	if err != nil {
-		return errors.WithStack(parseError(err))
+		return errors.WithStack(parseError(err, r.entity))
 	}
 
 	return nil

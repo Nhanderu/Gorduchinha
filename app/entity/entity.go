@@ -1,7 +1,17 @@
 package entity
 
+import (
+	"time"
+)
+
+type entity struct {
+	ID        uint32
+	CreatedAt time.Time
+	UpdatedAt time.Time
+}
+
 type Team struct {
-	ID       int
+	entity
 	Abbr     string
 	Name     string
 	FullName string
@@ -9,13 +19,14 @@ type Team struct {
 }
 
 type Champ struct {
-	ID   int
+	entity
 	Slug string
 	Name string
 }
 
 type Trophy struct {
-	ID    int
+	entity
+	UUID  string
 	Year  int
 	Champ Champ
 }

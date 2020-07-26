@@ -1,44 +1,44 @@
 package data
 
 import (
+	"database/sql"
+
+	"github.com/Nhanderu/gorduchinha/app/contract"
 	"github.com/Nhanderu/gorduchinha/app/entity"
 	"github.com/pkg/errors"
 )
 
 type teamRepo struct {
-	ex executor
+	ex           executor
+	entity       string
+	selectFields string
 }
 
-func (r teamRepo) FindAll() ([]entity.Team, error) {
-	const query = `
-		SELECT
-			t.id
-			, t.abbr
-			, t.name
-			, t.full_name
-			FROM tb_team AS t
-			WHERE t.deleted_at IS NULL
-		;
-	`
-
-	rows, err := r.ex.Query(query)
-	if err != nil {
-		return nil, errors.WithStack(parseError(err))
+func newTeamRepo(ex executor) contract.TeamRepo {
+	return teamRepo{
+		ex:     ex,
+		entity: "team",
+		selectFields: `
+			c.id
+			, c.created_at
+			, c.updated_at
+			, c.abbr
+			, c.name
+		`,
 	}
-	defer rows.Close()
+}
+
+func (r teamRepo) parseEntities(rows *sql.Rows, err error) ([]entity.Team, error) {
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
 
 	teams := make([]entity.Team, 0)
 	for rows.Next() {
 
-		var team entity.Team
-		err = rows.Scan(
-			&team.ID,
-			&team.Abbr,
-			&team.Name,
-			&team.FullName,
-		)
+		team, err := r.parseEntity(rows)
 		if err != nil {
-			return nil, errors.WithStack(parseError(err))
+			return nil, errors.WithStack(err)
 		}
 
 		teams = append(teams, team)
@@ -47,31 +47,54 @@ func (r teamRepo) FindAll() ([]entity.Team, error) {
 	return teams, nil
 }
 
-func (r teamRepo) FindByAbbr(abbr string) (entity.Team, error) {
+func (r teamRepo) parseEntity(s scanner) (entity.Team, error) {
+
+	var team entity.Team
+	err := s.Scan(
+		&team.ID,
+		&team.CreatedAt,
+		&team.UpdatedAt,
+		&team.Abbr,
+		&team.Name,
+	)
+	if err != nil {
+		return entity.Team{}, errors.WithStack(err)
+	}
+
+	return team, nil
+}
+
+func (r teamRepo) FindAll() ([]entity.Team, error) {
 	const query = `
-		SELECT
-			t.id
-			, t.abbr
-			, t.name
-			, t.full_name
-			FROM tb_team AS t
-			WHERE t.deleted_at IS NULL
-				AND t.abbr = $1
+		SELECT %s
+			FROM tb_team AS c
+			WHERE c.deleted_at IS NULL
 		;
 	`
 
-	var team entity.Team
-	err := r.ex.QueryRow(
+	teams, err := r.parseEntities(r.ex.Query(query))
+	if err != nil {
+		return nil, errors.WithStack(parseError(err, r.entity))
+	}
+
+	return teams, nil
+}
+
+func (r teamRepo) FindByAbbr(abbr string) (entity.Team, error) {
+	const query = `
+		SELECT %s
+			FROM tb_team AS c
+			WHERE c.deleted_at IS NULL
+				AND c.abbr = $1
+		;
+	`
+
+	team, err := r.parseEntity(r.ex.QueryRow(
 		query,
 		abbr,
-	).Scan(
-		&team.ID,
-		&team.Abbr,
-		&team.Name,
-		&team.FullName,
-	)
+	))
 	if err != nil {
-		return team, errors.WithStack(parseError(err))
+		return entity.Team{}, errors.WithStack(parseError(err, r.entity))
 	}
 
 	return team, nil

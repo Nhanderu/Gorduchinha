@@ -5,10 +5,12 @@ import (
 	"io/ioutil"
 	"net/http"
 
+	"github.com/Nhanderu/gorduchinha/app/constant"
 	"github.com/Nhanderu/gorduchinha/app/contract"
-	"github.com/Nhanderu/gorduchinha/cmd/api/server/handler/resolver"
-	"github.com/Nhanderu/gorduchinha/cmd/api/server/handler/viewmodel"
+	"github.com/Nhanderu/gorduchinha/cmd/api/server/resolver"
+	"github.com/Nhanderu/gorduchinha/cmd/api/server/viewmodel"
 	graphql "github.com/graph-gophers/graphql-go"
+	"github.com/pkg/errors"
 	"github.com/valyala/fasthttp"
 )
 
@@ -23,10 +25,11 @@ func HandleGraphql(teamService contract.TeamService, champService contract.Champ
 		var request viewmodel.GraphQLQueryRequest
 		err := json.Unmarshal(ctx.PostBody(), &request)
 		if err != nil {
-			respondRequestError(ctx, "invalid body")
+			HandleError(ctx, errors.WithStack(constant.NewErrorInvalidRequestBody()))
 			return
 		}
 
-		respondJSON(ctx, http.StatusOK, schema.Exec(ctx, request.Query, request.OperationName, request.Variables))
+		response := schema.Exec(ctx, request.Query, request.OperationName, request.Variables)
+		respondJSON(ctx, http.StatusOK, response)
 	}
 }

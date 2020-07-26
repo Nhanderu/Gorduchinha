@@ -81,7 +81,7 @@ func (r redisCache) Get(key string) ([]byte, error) {
 
 	val, err := r.redis.Get(r.buildKey(key)).Bytes()
 	if err == redis.Nil {
-		return val, errors.WithStack(constant.ErrCacheMiss)
+		return val, errors.WithStack(constant.NewErrorCacheMiss())
 	}
 	if err != nil {
 		return val, errors.WithStack(err)

@@ -26,9 +26,9 @@ func NewTeamService(
 
 func (s teamService) FindAll() ([]entity.Team, error) {
 
-	var teams []entity.Team
-
 	cacheKey := "team"
+
+	var teams []entity.Team
 	err := s.cache.GetJSON(cacheKey, &teams)
 	if err != nil {
 

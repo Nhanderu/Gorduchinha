@@ -26,9 +26,9 @@ func NewChampService(
 
 func (s champService) FindAll() ([]entity.Champ, error) {
 
-	var champs []entity.Champ
-
 	cacheKey := "champ"
+
+	var champs []entity.Champ
 	err := s.cache.GetJSON(cacheKey, &champs)
 	if err != nil {
 

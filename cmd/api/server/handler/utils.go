@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/Nhanderu/gorduchinha/app/constant"
@@ -14,83 +15,79 @@ const (
 	ErrorMessageContextKey = "error-message"
 )
 
+var (
+	errorStatusMap = map[string]int{
+		constant.ErrorCodeNotFound:        http.StatusNotFound,
+		constant.ErrorCodeCacheMiss:       http.StatusInternalServerError,
+		constant.ErrorCodeTooManyRequests: http.StatusTooManyRequests,
+		constant.ErrorCodeInternal:        http.StatusInternalServerError,
+	}
+)
+
 type resultWrapper struct {
-	Success bool                `json:"success"`
-	Data    interface{}         `json:"data,omitempty"`
-	Error   *resultWrapperError `json:"error,omitempty"`
+	Success bool                 `json:"success"`
+	Data    interface{}          `json:"data,omitempty"`
+	Errors  []resultWrapperError `json:"errors,omitempty"`
 }
 
 type resultWrapperError struct {
-	Code string `json:"code,omitempty"`
-}
-
-func respondOK(ctx *fasthttp.RequestCtx, data interface{}) {
-	respondJSON(ctx, http.StatusOK, resultWrapper{
-		Success: true,
-		Data:    data,
-	})
+	Code  string `json:"code"`
+	Field string `json:"field,omitempty"`
 }
 
 func HandleError(ctx *fasthttp.RequestCtx, err error) {
 
 	if err == nil {
-		respondInternalError(ctx, "Unknown error.")
 		return
 	}
 
 	ctx.SetUserValue(ErrorMessageContextKey, err.Error())
 	err = errors.Cause(err)
 
-	switch err {
-
-	case constant.ErrNotFound:
-		respondNotFoundError(ctx)
-		return
-
-	case constant.ErrNotAuthorized:
-		respondAuthError(ctx)
-		return
-
-	}
-
 	switch e := err.(type) {
 
-	case constant.ValidationError:
-		respondValidationError(ctx, e.Error())
+	case constant.AppError:
+		statusCode, ok := errorStatusMap[e.Code]
+		if !ok {
+			statusCode = http.StatusInternalServerError
+		}
+
+		respondError(ctx, statusCode, e.Code, e.Field, e.Error())
 		return
 
+	default:
+		respondError(
+			ctx,
+			http.StatusInternalServerError,
+			constant.ErrorCodeInternal,
+			"",
+			fmt.Sprintf("unmapped error: %s", e.Error()),
+		)
+		return
 	}
 
-	respondInternalError(ctx, "Internal error.")
 }
 
-func respondAuthError(ctx *fasthttp.RequestCtx) {
-	respondError(ctx, http.StatusUnauthorized, "Access unauthorized.")
-}
-
-func respondValidationError(ctx *fasthttp.RequestCtx, code string) {
-	respondError(ctx, http.StatusUnprocessableEntity, code)
-}
-
-func respondRequestError(ctx *fasthttp.RequestCtx, code string) {
-	respondError(ctx, http.StatusBadRequest, code)
-}
-
-func respondInternalError(ctx *fasthttp.RequestCtx, code string) {
-	respondError(ctx, http.StatusInternalServerError, code)
-}
-
-func respondNotFoundError(ctx *fasthttp.RequestCtx) {
-	respondError(ctx, http.StatusNotFound, "Resource not found.")
-}
-
-func respondError(ctx *fasthttp.RequestCtx, status int, code string) {
+func respondError(ctx *fasthttp.RequestCtx, status int, code string, field string, message string) {
 	ctx.SetUserValue(ErrorCodeContextKey, code)
+	ctx.SetUserValue(ErrorMessageContextKey, message)
+
+	errors := make([]resultWrapperError, 0)
+	errors = append(errors, resultWrapperError{
+		Code:  code,
+		Field: field,
+	})
+
 	respondJSON(ctx, status, resultWrapper{
 		Success: false,
-		Error: &resultWrapperError{
-			Code: code,
-		},
+		Errors:  errors,
+	})
+}
+
+func respondOK(ctx *fasthttp.RequestCtx, data interface{}) {
+	respondJSON(ctx, http.StatusOK, resultWrapper{
+		Success: true,
+		Data:    data,
 	})
 }
 

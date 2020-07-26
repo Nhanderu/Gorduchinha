@@ -4,31 +4,31 @@ import (
 	"github.com/Nhanderu/gorduchinha/app/entity"
 )
 
-type TeamResolver struct {
+type teamResolver struct {
 	team entity.Team
 }
 
-func NewTeamResolver(team entity.Team) *TeamResolver {
-	return &TeamResolver{
+func NewTeamResolver(team entity.Team) *teamResolver {
+	return &teamResolver{
 		team: team,
 	}
 }
 
-func (r TeamResolver) Abbr() string {
+func (r teamResolver) Abbr() string {
 	return r.team.Abbr
 }
 
-func (r TeamResolver) Name() string {
+func (r teamResolver) Name() string {
 	return r.team.Name
 }
 
-func (r TeamResolver) FullName() string {
+func (r teamResolver) FullName() string {
 	return r.team.FullName
 }
 
-func (r TeamResolver) Trophies(args *TrophyArgs) []*TrophyResolver {
+func (r teamResolver) Trophies(args *TrophyArgs) []*trophyResolver {
 
-	resolvers := make([]*TrophyResolver, 0)
+	resolvers := make([]*trophyResolver, 0)
 	for _, trophy := range r.team.Trophies {
 		if args.ChampSlug == nil || *args.ChampSlug == trophy.Champ.Slug {
 			resolvers = append(resolvers, NewTrophyResolver(trophy))
