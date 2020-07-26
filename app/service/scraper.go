@@ -30,6 +30,7 @@ func NewScraperService(
 	teamService contract.TeamService,
 	champService contract.ChampService,
 ) contract.ScraperService {
+
 	return scraperService{
 		data:         data,
 		log:          log,
@@ -147,13 +148,39 @@ var (
 		"Atlético Mineiro": constant.TeamAbbrCAM,
 		"Cruzeiro":         constant.TeamAbbrCEC,
 		"Grêmio":           constant.TeamAbbrGFBPA,
-		"Internacional":    constant.TeamAbbrIEC,
+		"Internacional":    constant.TeamAbbrSCI,
+	}
+	allTeamsAbbrs = []string{
+		constant.TeamAbbrSCCP,
+		constant.TeamAbbrSEP,
+		constant.TeamAbbrSPFC,
+		constant.TeamAbbrSFC,
+		constant.TeamAbbrCRF,
+		constant.TeamAbbrCRVG,
+		constant.TeamAbbrCRVG,
+		constant.TeamAbbrFFC,
+		constant.TeamAbbrBFR,
+		constant.TeamAbbrCAM,
+		constant.TeamAbbrCEC,
+		constant.TeamAbbrGFBPA,
+		constant.TeamAbbrSCI,
 	}
 )
 
-func (s scraperService) scrape(champSlug string, url string, linesSel, teamSel, yearsSel cascadia.Selector) (map[string][]int, error) {
+func (s scraperService) scrape(
+	url string,
+	linesSel, teamSel, yearsSel cascadia.Selector,
+	possibleTeamsAbbrs ...string,
+) (map[string][]int, error) {
 
-	trophies := make(map[string][]int)
+	if len(possibleTeamsAbbrs) == 0 {
+		possibleTeamsAbbrs = allTeamsAbbrs
+	}
+
+	possibleTeams := make(map[string]struct{}, len(possibleTeamsAbbrs))
+	for _, abbr := range possibleTeamsAbbrs {
+		possibleTeams[abbr] = struct{}{}
+	}
 
 	res, err := s.httpClient.Get(url)
 	if err != nil {
@@ -165,6 +192,7 @@ func (s scraperService) scrape(champSlug string, url string, linesSel, teamSel, 
 		return nil, errors.WithStack(err)
 	}
 
+	trophies := make(map[string][]int)
 	lines := linesSel.MatchAll(doc)
 	for _, line := range lines {
 
@@ -179,6 +207,11 @@ func (s scraperService) scrape(champSlug string, url string, linesSel, teamSel, 
 			continue
 		}
 
+		_, possible := possibleTeams[teamAbbr]
+		if !possible {
+			continue
+		}
+
 		rawYears := innerText(yearsSel.MatchFirst(line))
 		years := reYears.FindAllString(rawYears, -1)
 		if len(years) < 1 {
@@ -189,8 +222,8 @@ func (s scraperService) scrape(champSlug string, url string, linesSel, teamSel, 
 		for i := range teamTrophies {
 			teamTrophies[i], err = strconv.Atoi(years[i])
 			if err != nil {
-				s.log.Errorf("Error scraping title %s for %s: %s.",
-					champSlug,
+				s.log.Errorf(
+					"Error scraping title for %s: %s.",
 					teamAbbr,
 					err.Error(),
 				)
@@ -216,7 +249,7 @@ func (s scraperService) scrapeNationalLeague1Div() (map[string][]int, error) {
 		years = cascadia.MustCompile("td:nth-child(6)")
 	)
 
-	trophies, err := s.scrape(constant.ChampSlugNationalLeague1Div, url, lines, team, years)
+	trophies, err := s.scrape(url, lines, team, years)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
@@ -236,7 +269,7 @@ func (s scraperService) scrapeNationalLeague2Div() (map[string][]int, error) {
 		years = cascadia.MustCompile("td:nth-child(2)")
 	)
 
-	trophies, err := s.scrape(constant.ChampSlugNationalLeague1Div, url, lines, team, years)
+	trophies, err := s.scrape(url, lines, team, years)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
@@ -256,7 +289,7 @@ func (s scraperService) scrapeNationalCup() (map[string][]int, error) {
 		years = cascadia.MustCompile("td:nth-child(4)")
 	)
 
-	trophies, err := s.scrape(constant.ChampSlugNationalLeague1Div, url, lines, team, years)
+	trophies, err := s.scrape(url, lines, team, years)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
@@ -276,7 +309,7 @@ func (s scraperService) scrapeWorldCup() (map[string][]int, error) {
 		years = cascadia.MustCompile("td:nth-child(2)")
 	)
 
-	trophies, err := s.scrape(constant.ChampSlugNationalLeague1Div, url, lines, team, years)
+	trophies, err := s.scrape(url, lines, team, years)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
@@ -296,7 +329,7 @@ func (s scraperService) scrapeIntercontinentalCup() (map[string][]int, error) {
 		years = cascadia.MustCompile("td:nth-child(2)")
 	)
 
-	trophies, err := s.scrape(constant.ChampSlugNationalLeague1Div, url, lines, team, years)
+	trophies, err := s.scrape(url, lines, team, years)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
@@ -316,7 +349,7 @@ func (s scraperService) scrapeSouthAmericanCupA() (map[string][]int, error) {
 		years = cascadia.MustCompile("td:nth-child(3)")
 	)
 
-	trophies, err := s.scrape(constant.ChampSlugNationalLeague1Div, url, lines, team, years)
+	trophies, err := s.scrape(url, lines, team, years)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
@@ -336,7 +369,7 @@ func (s scraperService) scrapeSouthAmericanCupB() (map[string][]int, error) {
 		years = cascadia.MustCompile("td:nth-child(3)")
 	)
 
-	trophies, err := s.scrape(constant.ChampSlugNationalLeague1Div, url, lines, team, years)
+	trophies, err := s.scrape(url, lines, team, years)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
@@ -356,7 +389,7 @@ func (s scraperService) scrapeSouthAmericanSupercup() (map[string][]int, error) 
 		years = cascadia.MustCompile("td:nth-child(3)")
 	)
 
-	trophies, err := s.scrape(constant.ChampSlugNationalLeague1Div, url, lines, team, years)
+	trophies, err := s.scrape(url, lines, team, years)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
@@ -376,7 +409,16 @@ func (s scraperService) scrapeSPStateCup() (map[string][]int, error) {
 		years = cascadia.MustCompile("td:nth-child(3)")
 	)
 
-	trophies, err := s.scrape(constant.ChampSlugNationalLeague1Div, url, lines, team, years)
+	trophies, err := s.scrape(
+		url,
+		lines,
+		team,
+		years,
+		constant.TeamAbbrSCCP,
+		constant.TeamAbbrSEP,
+		constant.TeamAbbrSPFC,
+		constant.TeamAbbrSFC,
+	)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
@@ -396,7 +438,16 @@ func (s scraperService) scrapeRJStateCup() (map[string][]int, error) {
 		years = cascadia.MustCompile("td:nth-child(2)")
 	)
 
-	trophies, err := s.scrape(constant.ChampSlugNationalLeague1Div, url, lines, team, years)
+	trophies, err := s.scrape(
+		url,
+		lines,
+		team,
+		years,
+		constant.TeamAbbrCRF,
+		constant.TeamAbbrCRVG,
+		constant.TeamAbbrFFC,
+		constant.TeamAbbrBFR,
+	)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
@@ -416,7 +467,14 @@ func (s scraperService) scrapeRSStateCup() (map[string][]int, error) {
 		years = cascadia.MustCompile("td:nth-child(3)")
 	)
 
-	trophies, err := s.scrape(constant.ChampSlugNationalLeague1Div, url, lines, team, years)
+	trophies, err := s.scrape(
+		url,
+		lines,
+		team,
+		years,
+		constant.TeamAbbrGFBPA,
+		constant.TeamAbbrSCI,
+	)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
@@ -436,7 +494,14 @@ func (s scraperService) scrapeMGStateCup() (map[string][]int, error) {
 		years = cascadia.MustCompile("td:nth-child(3)")
 	)
 
-	trophies, err := s.scrape(constant.ChampSlugNationalLeague1Div, url, lines, team, years)
+	trophies, err := s.scrape(
+		url,
+		lines,
+		team,
+		years,
+		constant.TeamAbbrCAM,
+		constant.TeamAbbrCEC,
+	)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}

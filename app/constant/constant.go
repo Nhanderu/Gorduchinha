@@ -29,5 +29,5 @@ const (
 	TeamAbbrCAM   = "cam"
 	TeamAbbrCEC   = "cec"
 	TeamAbbrGFBPA = "gfbpa"
-	TeamAbbrIEC   = "iec"
+	TeamAbbrSCI   = "sci"
 )

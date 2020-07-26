@@ -89,7 +89,7 @@ INSERT INTO tb_team (abbr, name, full_name)
         , ( 'cam',   'Atlético',      'Clube Atlético Mineiro' )
         , ( 'cec',   'Cruzeiro',      'Cruzeiro Esporte Clube' )
         , ( 'gfbpa', 'Grêmio',        'Grêmio Foot-Ball Porto Alegrense' )
-        , ( 'iec',   'Internacional', 'Internacional Esporte Clube' )
+        , ( 'sci',   'Internacional', 'Sport Club Internacional' )
 ;
 
 -- tb_trophy

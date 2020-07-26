@@ -14,7 +14,11 @@ type teamService struct {
 	cache contract.CacheManager
 }
 
-func NewTeamService(data contract.DataManager, cache contract.CacheManager) contract.TeamService {
+func NewTeamService(
+	data contract.DataManager,
+	cache contract.CacheManager,
+) contract.TeamService {
+
 	return teamService{
 		data:  data,
 		cache: cache,

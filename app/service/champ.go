@@ -14,7 +14,11 @@ type champService struct {
 	cache contract.CacheManager
 }
 
-func NewChampService(data contract.DataManager, cache contract.CacheManager) contract.ChampService {
+func NewChampService(
+	data contract.DataManager,
+	cache contract.CacheManager,
+) contract.ChampService {
+
 	return champService{
 		data:  data,
 		cache: cache,
