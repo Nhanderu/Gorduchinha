@@ -40,7 +40,6 @@ func Run(
 	// - body limit
 	// - secure (?)
 	// - XSS
-	// - GZIP
 
 	open.handle(http.MethodGet, "/health", handler.HealthCheck())
 	open.handle(http.MethodPost, "/graphql", handler.HandleGraphql(teamService, champService))

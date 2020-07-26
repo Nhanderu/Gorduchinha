@@ -94,6 +94,8 @@ func respondOK(ctx *fasthttp.RequestCtx, data interface{}) {
 
 func respondJSON(ctx *fasthttp.RequestCtx, code int, result interface{}) {
 	ctx.SetContentType("app/json; charset=UTF-8")
+	ctx.Response.Header.Add("Content-Encoding", "gzip")
 	ctx.SetStatusCode(code)
-	json.NewEncoder(ctx).Encode(result)
+	b, _ := json.Marshal(result)
+	fasthttp.WriteGzipLevel(ctx, b, fasthttp.CompressBestSpeed)
 }
