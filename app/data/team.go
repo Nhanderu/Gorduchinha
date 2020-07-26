@@ -2,6 +2,7 @@ package data
 
 import (
 	"database/sql"
+	"fmt"
 
 	"github.com/Nhanderu/gorduchinha/app/contract"
 	"github.com/Nhanderu/gorduchinha/app/entity"
@@ -64,7 +65,7 @@ func (r teamRepo) parseEntity(s scanner) (entity.Team, error) {
 	return team, nil
 }
 
-func (r teamRepo) FindAll() ([]entity.Team, error) {
+func (r teamRepo) Find() ([]entity.Team, error) {
 	const query = `
 		SELECT %s
 			FROM tb_team AS c
@@ -72,7 +73,8 @@ func (r teamRepo) FindAll() ([]entity.Team, error) {
 		;
 	`
 
-	teams, err := r.parseEntities(r.ex.Query(query))
+	q := fmt.Sprintf(query, r.selectFields)
+	teams, err := r.parseEntities(r.ex.Query(q))
 	if err != nil {
 		return nil, errors.WithStack(parseError(err, r.entity))
 	}
@@ -89,8 +91,9 @@ func (r teamRepo) FindByAbbr(abbr string) (entity.Team, error) {
 		;
 	`
 
+	q := fmt.Sprintf(query, r.selectFields)
 	team, err := r.parseEntity(r.ex.QueryRow(
-		query,
+		q,
 		abbr,
 	))
 	if err != nil {

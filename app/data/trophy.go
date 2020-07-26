@@ -79,12 +79,7 @@ func (r trophyRepo) parseEntity(s scanner) (entity.Trophy, error) {
 
 func (r trophyRepo) FindByTeamID(teamID uint32) ([]entity.Trophy, error) {
 	const query = `
-		SELECT
-			t.id
-			, t.year
-			, c.id
-			, c.slug
-			, c.name
+		SELECT %s
 			FROM tb_trophy AS t
 			JOIN tb_champ AS c
 				ON c.deleted_at IS NULL
@@ -94,7 +89,9 @@ func (r trophyRepo) FindByTeamID(teamID uint32) ([]entity.Trophy, error) {
 		;
 	`
 
-	trophies, err := r.parseEntities(r.ex.Query(query,
+	q := fmt.Sprintf(query, r.selectFields)
+	trophies, err := r.parseEntities(r.ex.Query(
+		q,
 		teamID,
 	))
 	if err != nil {
@@ -148,7 +145,7 @@ func (r trophyRepo) BulkInsertByTeams(teams []entity.Team) error {
 	return nil
 }
 
-func (r trophyRepo) DeleteAll() error {
+func (r trophyRepo) Delete() error {
 	const query = `
 		UPDATE tb_trophy
 			SET deleted_at = NOW()

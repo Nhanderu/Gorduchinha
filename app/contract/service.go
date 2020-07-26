@@ -5,12 +5,12 @@ import (
 )
 
 type TeamService interface {
-	FindAll() ([]entity.Team, error)
+	Find() ([]entity.Team, error)
 	FindByAbbr(abbr string) (entity.Team, error)
 }
 
 type ChampService interface {
-	FindAll() ([]entity.Champ, error)
+	Find() ([]entity.Champ, error)
 	FindBySlug(slug string) (entity.Champ, error)
 }
 

@@ -23,17 +23,17 @@ type RepoManager interface {
 }
 
 type ChampRepo interface {
-	FindAll() ([]entity.Champ, error)
+	Find() ([]entity.Champ, error)
 	FindBySlug(slug string) (entity.Champ, error)
 }
 
 type TeamRepo interface {
-	FindAll() ([]entity.Team, error)
+	Find() ([]entity.Team, error)
 	FindByAbbr(abbr string) (entity.Team, error)
 }
 
 type TrophyRepo interface {
 	FindByTeamID(teamID uint32) ([]entity.Trophy, error)
 	BulkInsertByTeams(teams []entity.Team) error
-	DeleteAll() error
+	Delete() error
 }

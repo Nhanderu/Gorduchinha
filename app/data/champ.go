@@ -2,6 +2,7 @@ package data
 
 import (
 	"database/sql"
+	"fmt"
 
 	"github.com/Nhanderu/gorduchinha/app/contract"
 	"github.com/Nhanderu/gorduchinha/app/entity"
@@ -64,7 +65,7 @@ func (r champRepo) parseEntity(s scanner) (entity.Champ, error) {
 	return champ, nil
 }
 
-func (r champRepo) FindAll() ([]entity.Champ, error) {
+func (r champRepo) Find() ([]entity.Champ, error) {
 	const query = `
 		SELECT %s
 			FROM tb_champ AS c
@@ -72,7 +73,8 @@ func (r champRepo) FindAll() ([]entity.Champ, error) {
 		;
 	`
 
-	champs, err := r.parseEntities(r.ex.Query(query))
+	q := fmt.Sprintf(query, r.selectFields)
+	champs, err := r.parseEntities(r.ex.Query(q))
 	if err != nil {
 		return nil, errors.WithStack(parseError(err, r.entity))
 	}
@@ -89,8 +91,9 @@ func (r champRepo) FindBySlug(slug string) (entity.Champ, error) {
 		;
 	`
 
+	q := fmt.Sprintf(query, r.selectFields)
 	champ, err := r.parseEntity(r.ex.QueryRow(
-		query,
+		q,
 		slug,
 	))
 	if err != nil {

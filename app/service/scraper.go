@@ -53,7 +53,7 @@ func (s scraperService) ScrapeAndUpdate() error {
 	}
 	defer tx.Rollback()
 
-	err = tx.Trophy().DeleteAll()
+	err = tx.Trophy().Delete()
 	if err != nil {
 		return errors.WithStack(err)
 	}

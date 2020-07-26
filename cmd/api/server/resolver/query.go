@@ -33,7 +33,7 @@ func (r queryResolver) Team(args *TeamArgs) (*teamResolver, error) {
 
 func (r queryResolver) Teams() ([]*teamResolver, error) {
 
-	teams, err := r.teamService.FindAll()
+	teams, err := r.teamService.Find()
 	if err != nil {
 		return nil, errors.Cause(err)
 	}
@@ -64,7 +64,7 @@ func (r queryResolver) Champ(args *ChampArgs) (*champResolver, error) {
 
 func (r queryResolver) Champs() ([]*champResolver, error) {
 
-	champs, err := r.champService.FindAll()
+	champs, err := r.champService.Find()
 	if err != nil {
 		return nil, errors.Cause(err)
 	}

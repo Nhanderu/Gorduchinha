@@ -24,7 +24,7 @@ func NewTeamService(
 	}
 }
 
-func (s teamService) FindAll() ([]entity.Team, error) {
+func (s teamService) Find() ([]entity.Team, error) {
 
 	cacheKey := "team"
 
@@ -32,7 +32,7 @@ func (s teamService) FindAll() ([]entity.Team, error) {
 	err := s.cache.GetJSON(cacheKey, &teams)
 	if err != nil {
 
-		teams, err = s.data.Team().FindAll()
+		teams, err = s.data.Team().Find()
 		if err != nil {
 			return nil, errors.WithStack(err)
 		}

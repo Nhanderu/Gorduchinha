@@ -9,7 +9,7 @@ import (
 func ListTeams(teamService contract.TeamService) func(ctx *fasthttp.RequestCtx) {
 	return func(ctx *fasthttp.RequestCtx) {
 
-		teams, err := teamService.FindAll()
+		teams, err := teamService.Find()
 		if err != nil {
 			HandleError(ctx, err)
 			return

@@ -24,7 +24,7 @@ func NewChampService(
 	}
 }
 
-func (s champService) FindAll() ([]entity.Champ, error) {
+func (s champService) Find() ([]entity.Champ, error) {
 
 	cacheKey := "champ"
 
@@ -32,7 +32,7 @@ func (s champService) FindAll() ([]entity.Champ, error) {
 	err := s.cache.GetJSON(cacheKey, &champs)
 	if err != nil {
 
-		champs, err = s.data.Champ().FindAll()
+		champs, err = s.data.Champ().Find()
 		if err != nil {
 			return nil, errors.WithStack(err)
 		}

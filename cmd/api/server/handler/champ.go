@@ -9,7 +9,7 @@ import (
 func ListChamps(champService contract.ChampService) func(ctx *fasthttp.RequestCtx) {
 	return func(ctx *fasthttp.RequestCtx) {
 
-		champs, err := champService.FindAll()
+		champs, err := champService.Find()
 		if err != nil {
 			HandleError(ctx, err)
 			return
