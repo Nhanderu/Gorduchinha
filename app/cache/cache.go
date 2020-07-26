@@ -7,7 +7,7 @@ import (
 
 	"github.com/Nhanderu/gorduchinha/app/constant"
 	"github.com/Nhanderu/gorduchinha/app/contract"
-	"github.com/go-redis/redis"
+	"github.com/go-redis/redis/v7"
 	"github.com/pkg/errors"
 )
 
@@ -38,43 +38,15 @@ func New(
 }
 
 func (r redisCache) buildKey(key string) string {
-	return r.prefix + "-" + key
+	return r.prefix + ":" + key
 }
 
-func (r redisCache) CleanAll() error {
-
-	keys, err := r.redis.Keys(r.buildKey("*")).Result()
-	if err == redis.Nil {
-		return nil
-	}
-	if err != nil {
-		return errors.WithStack(err)
-	}
-
-	if len(keys) > 0 {
-		err = r.redis.Del(keys...).Err()
-	}
-	if err == redis.Nil {
-		return nil
-	}
-	if err != nil {
-		return errors.WithStack(err)
-	}
-
-	return nil
+func (r redisCache) ClientPool() *redis.Client {
+	return r.redis
 }
 
-func (r redisCache) Invalidate(key string) error {
-
-	err := r.redis.Del(r.buildKey(key)).Err()
-	if err == redis.Nil {
-		return nil
-	}
-	if err != nil {
-		return errors.WithStack(err)
-	}
-
-	return nil
+func (r redisCache) Prefix() string {
+	return r.prefix
 }
 
 func (r redisCache) Get(key string) ([]byte, error) {
@@ -134,7 +106,7 @@ func (r redisCache) GetExpiration(key string) (time.Duration, error) {
 
 	expiration, err := r.redis.TTL(r.buildKey(key)).Result()
 	if err != nil {
-		return expiration, errors.WithStack(err)
+		return 0, errors.WithStack(err)
 	}
 
 	return expiration, nil
@@ -143,6 +115,42 @@ func (r redisCache) GetExpiration(key string) (time.Duration, error) {
 func (r redisCache) SetExpiration(key string, expiration time.Duration) error {
 
 	err := r.redis.Expire(r.buildKey(key), expiration).Err()
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	return nil
+}
+
+func (r redisCache) Invalidate(key string) error {
+
+	err := r.redis.Del(r.buildKey(key)).Err()
+	if err == redis.Nil {
+		return nil
+	}
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	return nil
+}
+
+func (r redisCache) CleanAll() error {
+
+	keys, err := r.redis.Keys(r.buildKey("*")).Result()
+	if err == redis.Nil {
+		return nil
+	}
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	if len(keys) > 0 {
+		err = r.redis.Del(keys...).Err()
+	}
+	if err == redis.Nil {
+		return nil
+	}
 	if err != nil {
 		return errors.WithStack(err)
 	}

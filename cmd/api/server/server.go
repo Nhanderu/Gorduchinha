@@ -3,6 +3,7 @@ package server
 import (
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/Nhanderu/gorduchinha/app/contract"
 	"github.com/Nhanderu/gorduchinha/app/logger"
@@ -16,7 +17,10 @@ func Run(
 	serverPort int,
 	serverPrefix string,
 	serverAuthClientsURLs []string,
+	serverRateLimitPeriod time.Duration,
+	serverRateLimitLimit int64,
 	log logger.Logger,
+	cache contract.CacheManager,
 	teamService contract.TeamService,
 	champService contract.ChampService,
 	scraperService contract.ScraperService,
@@ -26,8 +30,9 @@ func Run(
 
 	open := router.group(
 		serverPrefix,
-		middleware.LoggerMiddleware(log),
-		middleware.CORSMiddleware(serverAuthClientsURLs),
+		middleware.Logger(log),
+		middleware.CORS(serverAuthClientsURLs),
+		middleware.RateLimit(cache, serverRateLimitPeriod, serverRateLimitLimit),
 	)
 
 	open.handle(http.MethodGet, "/health", handler.HealthCheck())

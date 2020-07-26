@@ -64,14 +64,19 @@ type CacheConfig struct {
 }
 
 type ServerConfig struct {
-	Port                 int              `mapstructure:"port"`
-	Prefix               string           `mapstructure:"prefix"`
-	MaxRequestsPerSecond float64          `mapstructure:"max-requests-per-second"`
-	Auth                 ServerAuthConfig `mapstructure:"auth"`
+	Port      int                   `mapstructure:"port"`
+	Prefix    string                `mapstructure:"prefix"`
+	Auth      ServerAuthConfig      `mapstructure:"auth"`
+	RateLimit ServerRateLimitConfig `mapstructure:"rate-limit"`
 }
 
 type ServerAuthConfig struct {
 	ClientsURLs []string `mapstructure:"clients-urls"`
+}
+
+type ServerRateLimitConfig struct {
+	Period time.Duration `mapstructure:"period"`
+	Limit  int64         `mapstructure:"limit"`
 }
 
 type LogConfig struct {

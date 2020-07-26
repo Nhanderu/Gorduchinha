@@ -21,10 +21,12 @@ cache:
 server:
   port: 8080
   prefix: "/api/v1"
-  max-requests-per-second: 10
   auth:
     clients-urls:
       - "*"
+  rate-limit:
+    period: "1s"
+    limit: 10
 
 log:
   log-to-file: false

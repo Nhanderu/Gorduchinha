@@ -6,7 +6,7 @@ import (
 	"github.com/henkman/fasthttpcors"
 )
 
-func CORSMiddleware(serverAuthClientsURLs []string) RequestMiddleware {
+func CORS(serverAuthClientsURLs []string) RequestMiddleware {
 	return fasthttpcors.NewCorsHandler(fasthttpcors.Options{
 		AllowedOrigins:   serverAuthClientsURLs,
 		AllowedHeaders:   []string{"Origin", "Accept", "Content-Type"},

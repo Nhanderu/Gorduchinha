@@ -2,9 +2,14 @@ package contract
 
 import (
 	"time"
+
+	"github.com/go-redis/redis/v7"
 )
 
 type CacheManager interface {
+	ClientPool() *redis.Client
+	Prefix() string
+
 	Get(key string) ([]byte, error)
 	Set(key string, data []byte) error
 
