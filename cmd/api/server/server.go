@@ -32,6 +32,7 @@ func Run(
 	open := router.group(
 		prefix,
 		middleware.Logger(log),
+		middleware.CORS(authClientsURLs),
 		middleware.RateLimit(cache, rateLimitPeriod, rateLimitLimit),
 	)
 
