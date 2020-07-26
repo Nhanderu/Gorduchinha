@@ -14,7 +14,7 @@ import (
 	"github.com/valyala/fasthttp"
 )
 
-func HandleGraphql(teamService contract.TeamService, champService contract.ChampService) func(ctx *fasthttp.RequestCtx) {
+func HandleGraphql(teamService contract.TeamService, champService contract.ChampService) func(*fasthttp.RequestCtx) {
 
 	typedefs, _ := ioutil.ReadFile("static/graphql/schema.gql")
 	queryResolver := resolver.NewQueryResolver(teamService, champService)

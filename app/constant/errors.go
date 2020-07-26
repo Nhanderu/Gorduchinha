@@ -4,8 +4,12 @@ import "fmt"
 
 const (
 
-	// ErrorCodeNotFound means that a resource was not found.
-	ErrorCodeNotFound = "not-found"
+	// ErrorCodePageNotFound means that a route was not found.
+	ErrorCodePageNotFound = "page-not-found"
+
+	// ErrorCodeMethodNotAllowed means that the current method is not allowed for the
+	// specific route.
+	ErrorCodeMethodNotAllowed = "method-not-allowed"
 
 	// ErrorCodeCacheMiss indicates a cache miss when fetching an item from CacheManager.
 	ErrorCodeCacheMiss = "cache-miss"
@@ -17,6 +21,9 @@ const (
 	// ErrorCodeInvalidRequestBody means that the HTTP request body has an invalid
 	// format.
 	ErrorCodeInvalidRequestBody = "invalid-request-body"
+
+	// ErrorCodeEntityNotFound means that a resource entity was not found.
+	ErrorCodeEntityNotFound = "entity-not-found"
 
 	// ErrorCodeInternal means any general internal error.
 	ErrorCodeInternal = "internal"
@@ -46,10 +53,15 @@ func (e AppError) Extensions() map[string]interface{} {
 	return m
 }
 
-func NewErrorNotFound(field string) AppError {
+func NewErrorPageNotFound() AppError {
 	return AppError{
-		Field: field,
-		Code:  ErrorCodeNotFound,
+		Code: ErrorCodePageNotFound,
+	}
+}
+
+func NewErrorMethodNotAllowed() AppError {
+	return AppError{
+		Code: ErrorCodeMethodNotAllowed,
 	}
 }
 
@@ -68,6 +80,13 @@ func NewErrorTooManyRequests() AppError {
 func NewErrorInvalidRequestBody() AppError {
 	return AppError{
 		Code: ErrorCodeInvalidRequestBody,
+	}
+}
+
+func NewErrorEntityNotFound(field string) AppError {
+	return AppError{
+		Field: field,
+		Code:  ErrorCodeEntityNotFound,
 	}
 }
 

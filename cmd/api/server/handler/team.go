@@ -6,7 +6,7 @@ import (
 	"github.com/valyala/fasthttp"
 )
 
-func ListTeams(teamService contract.TeamService) func(ctx *fasthttp.RequestCtx) {
+func ListTeams(teamService contract.TeamService) func(*fasthttp.RequestCtx) {
 	return func(ctx *fasthttp.RequestCtx) {
 
 		teams, err := teamService.Find()
@@ -19,7 +19,7 @@ func ListTeams(teamService contract.TeamService) func(ctx *fasthttp.RequestCtx) 
 	}
 }
 
-func FindTeamByAbbr(teamService contract.TeamService) func(ctx *fasthttp.RequestCtx) {
+func FindTeamByAbbr(teamService contract.TeamService) func(*fasthttp.RequestCtx) {
 	return func(ctx *fasthttp.RequestCtx) {
 
 		abbr, _ := ctx.UserValue("abbr").(string)

@@ -26,12 +26,11 @@ func Run(
 	scraperService contract.ScraperService,
 ) error {
 
-	router := newRouter()
+	router := newRouter(middleware.CORS(serverAuthClientsURLs))
 
 	open := router.group(
 		serverPrefix,
 		middleware.Logger(log),
-		middleware.CORS(serverAuthClientsURLs),
 		middleware.RateLimit(cache, serverRateLimitPeriod, serverRateLimitLimit),
 	)
 

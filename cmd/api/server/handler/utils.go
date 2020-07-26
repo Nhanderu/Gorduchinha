@@ -17,7 +17,8 @@ const (
 
 var (
 	errorStatusMap = map[string]int{
-		constant.ErrorCodeNotFound:        http.StatusNotFound,
+		constant.ErrorCodePageNotFound:    http.StatusNotFound,
+		constant.ErrorCodeEntityNotFound:  http.StatusNotFound,
 		constant.ErrorCodeCacheMiss:       http.StatusInternalServerError,
 		constant.ErrorCodeTooManyRequests: http.StatusTooManyRequests,
 		constant.ErrorCodeInternal:        http.StatusInternalServerError,

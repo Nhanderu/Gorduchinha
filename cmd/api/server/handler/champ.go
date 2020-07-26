@@ -6,7 +6,7 @@ import (
 	"github.com/valyala/fasthttp"
 )
 
-func ListChamps(champService contract.ChampService) func(ctx *fasthttp.RequestCtx) {
+func ListChamps(champService contract.ChampService) func(*fasthttp.RequestCtx) {
 	return func(ctx *fasthttp.RequestCtx) {
 
 		champs, err := champService.Find()
@@ -19,7 +19,7 @@ func ListChamps(champService contract.ChampService) func(ctx *fasthttp.RequestCt
 	}
 }
 
-func FindChampBySlug(champService contract.ChampService) func(ctx *fasthttp.RequestCtx) {
+func FindChampBySlug(champService contract.ChampService) func(*fasthttp.RequestCtx) {
 	return func(ctx *fasthttp.RequestCtx) {
 
 		slug, _ := ctx.UserValue("slug").(string)
@@ -33,7 +33,7 @@ func FindChampBySlug(champService contract.ChampService) func(ctx *fasthttp.Requ
 	}
 }
 
-func UpdateChamps(scraperService contract.ScraperService) func(ctx *fasthttp.RequestCtx) {
+func UpdateChamps(scraperService contract.ScraperService) func(*fasthttp.RequestCtx) {
 	return func(ctx *fasthttp.RequestCtx) {
 
 		err := scraperService.ScrapeAndUpdate()

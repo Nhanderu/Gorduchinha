@@ -1,8 +1,7 @@
 package server
 
 import (
-	"net/http"
-
+	"github.com/Nhanderu/gorduchinha/cmd/api/server/handler"
 	"github.com/Nhanderu/gorduchinha/cmd/api/server/middleware"
 	"github.com/fasthttp/router"
 	"github.com/valyala/fasthttp"
@@ -14,9 +13,19 @@ type r struct {
 	mw     []middleware.RequestMiddleware
 }
 
-func newRouter() *r {
+func newRouter(corsMiddleware middleware.RequestMiddleware) *r {
+
+	router := router.New()
+	router.HandleOPTIONS = true
+	// TODO: organize CORS
+	router.GlobalOPTIONS = corsMiddleware(func(ctx *fasthttp.RequestCtx) {})
+	router.HandleMethodNotAllowed = true
+	router.MethodNotAllowed = handler.MethodNotAllowed()
+	router.NotFound = handler.PageNotFound()
+	router.PanicHandler = handler.Panic()
+
 	return &r{
-		router: router.New(),
+		router: router,
 		mw:     make([]middleware.RequestMiddleware, 0),
 	}
 }
@@ -36,16 +45,4 @@ func (root *r) group(prefix string, mws ...middleware.RequestMiddleware) *r {
 func (root *r) handle(method, path string, handler fasthttp.RequestHandler) {
 	p := root.prefix + path
 	root.router.Handle(method, p, middleware.Use(handler, root.mw...))
-
-	_, registered := preflightRegistered[p]
-	if !registered {
-		root.router.Handle(http.MethodOptions, p, middleware.Use(preflightHandler, root.mw...))
-		preflightRegistered[p] = struct{}{}
-	}
 }
-
-var (
-	preflightRegistered = map[string]struct{}{}
-)
-
-func preflightHandler(ctx *fasthttp.RequestCtx) {}

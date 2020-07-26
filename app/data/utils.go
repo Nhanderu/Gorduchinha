@@ -22,11 +22,9 @@ func parseError(err error, entity string) error {
 		return nil
 	}
 
-	originalErr := errors.Cause(err)
-
-	switch originalErr {
+	switch errors.Cause(err) {
 	case sql.ErrNoRows:
-		return errors.WithStack(constant.NewErrorNotFound(entity))
+		return errors.WithStack(constant.NewErrorEntityNotFound(entity))
 	}
 
 	return errors.WithStack(err)
