@@ -22,6 +22,7 @@ func main() {
 		app.Config.Server.Auth.ClientsURLs,
 		app.Config.Server.RateLimit.Period,
 		app.Config.Server.RateLimit.Limit,
+		app.Config.Server.RouteKeys.UpdateTrophies,
 		app.Logger,
 		app.CacheManager,
 		app.Services().NewTeam(),

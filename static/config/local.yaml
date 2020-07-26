@@ -27,6 +27,8 @@ server:
   rate-limit:
     period: "1s"
     limit: 10
+  route-keys:
+    update-trophies:
 
 log:
   log-to-file: false

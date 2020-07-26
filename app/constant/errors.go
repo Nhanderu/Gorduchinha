@@ -25,6 +25,10 @@ const (
 	// ErrorCodeEntityNotFound means that a resource entity was not found.
 	ErrorCodeEntityNotFound = "entity-not-found"
 
+	// ErrorCodeInvalidQueryKey means the resource needed a query key, but the given
+	// one was missing or invalid.
+	ErrorCodeInvalidQueryKey = "invalid-query-key"
+
 	// ErrorCodeInternal means any general internal error.
 	ErrorCodeInternal = "internal"
 )
@@ -87,6 +91,12 @@ func NewErrorEntityNotFound(field string) AppError {
 	return AppError{
 		Field: field,
 		Code:  ErrorCodeEntityNotFound,
+	}
+}
+
+func NewErrorInvalidQueryKey() AppError {
+	return AppError{
+		Code: ErrorCodeInvalidQueryKey,
 	}
 }
 

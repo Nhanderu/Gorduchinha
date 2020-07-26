@@ -42,7 +42,9 @@ func (root *r) group(prefix string, mws ...middleware.RequestMiddleware) *r {
 	}
 }
 
-func (root *r) handle(method, path string, handler fasthttp.RequestHandler) {
+func (root *r) handle(method, path string, handler fasthttp.RequestHandler, mws ...middleware.RequestMiddleware) {
 	p := root.prefix + path
-	root.router.Handle(method, p, middleware.Use(handler, root.mw...))
+	handler = middleware.Use(handler, root.mw...)
+	handler = middleware.Use(handler, mws...)
+	root.router.Handle(method, p, handler)
 }

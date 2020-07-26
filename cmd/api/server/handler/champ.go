@@ -32,16 +32,3 @@ func FindChampBySlug(champService contract.ChampService) func(*fasthttp.RequestC
 		respondOK(ctx, viewmodel.ParseChampResponse(champ))
 	}
 }
-
-func UpdateChamps(scraperService contract.ScraperService) func(*fasthttp.RequestCtx) {
-	return func(ctx *fasthttp.RequestCtx) {
-
-		err := scraperService.ScrapeAndUpdate()
-		if err != nil {
-			HandleError(ctx, err)
-			return
-		}
-
-		respondOK(ctx, nil)
-	}
-}

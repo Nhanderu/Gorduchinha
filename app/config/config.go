@@ -68,6 +68,7 @@ type ServerConfig struct {
 	Prefix    string                `mapstructure:"prefix"`
 	Auth      ServerAuthConfig      `mapstructure:"auth"`
 	RateLimit ServerRateLimitConfig `mapstructure:"rate-limit"`
+	RouteKeys ServerRouteKeysConfig `mapstructure:"route-keys"`
 }
 
 type ServerAuthConfig struct {
@@ -77,6 +78,10 @@ type ServerAuthConfig struct {
 type ServerRateLimitConfig struct {
 	Period time.Duration `mapstructure:"period"`
 	Limit  int64         `mapstructure:"limit"`
+}
+
+type ServerRouteKeysConfig struct {
+	UpdateTrophies string `mapstructure:"update-trophies"`
 }
 
 type LogConfig struct {
