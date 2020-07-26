@@ -1,6 +1,10 @@
 package data
 
 import (
+	"bytes"
+	"fmt"
+	"strings"
+
 	"github.com/Nhanderu/gorduchinha/app/entity"
 	"github.com/pkg/errors"
 )
@@ -19,8 +23,8 @@ func (r trophyRepo) FindByTeamID(teamID int) ([]entity.Trophy, error) {
 			, c.name
 			FROM tb_trophy AS t
 			JOIN tb_champ AS c
-				ON t.champ_id = c.id
-				AND c.deleted_at IS NULL
+				ON c.deleted_at IS NULL
+				AND t.champ_id = c.id
 			WHERE t.deleted_at IS NULL
 				AND t.team_id = $1
 		;
@@ -55,7 +59,7 @@ func (r trophyRepo) FindByTeamID(teamID int) ([]entity.Trophy, error) {
 	return trophies, nil
 }
 
-func (r trophyRepo) Insert(teamID int, trophy entity.Trophy) error {
+func (r trophyRepo) BulkInsertByTeams(teams []entity.Team) error {
 	const query = `
 		INSERT INTO tb_trophy
 			( uuid
@@ -63,20 +67,35 @@ func (r trophyRepo) Insert(teamID int, trophy entity.Trophy) error {
 			, champ_id
 			, team_id
 			)
-			VALUES
-				( UUID_GENERATE_V1()
-				, $1
-				, $2
-				, $3
-				)
+			VALUES %s
 		;
 	`
+	const value = `(UUID_GENERATE_V4(), $%d, $%d, $%d),`
 
-	_, err := r.ex.Exec(query,
-		trophy.Year,
-		trophy.Champ.ID,
-		teamID,
-	)
+	var count int
+	params := []interface{}{}
+	values := bytes.NewBufferString("")
+
+	for i := range teams {
+		for j := range teams[i].Trophies {
+			params = append(
+				params,
+				teams[i].Trophies[j].Year,
+				teams[i].Trophies[j].Champ.ID,
+				teams[i].ID,
+			)
+			position := count * 3
+			fmt.Fprintf(values, value, position+1, position+2, position+3)
+			count++
+		}
+	}
+
+	if count == 0 {
+		return nil
+	}
+
+	q := fmt.Sprintf(query, strings.TrimSuffix(values.String(), ","))
+	_, err := r.ex.Exec(q, params...)
 	if err != nil {
 		return errors.WithStack(parseError(err))
 	}

@@ -34,6 +34,6 @@ type TeamRepo interface {
 
 type TrophyRepo interface {
 	FindByTeamID(teamID int) ([]entity.Trophy, error)
-	Insert(teamID int, trophy entity.Trophy) error
+	BulkInsertByTeams(teams []entity.Team) error
 	DeleteAll() error
 }

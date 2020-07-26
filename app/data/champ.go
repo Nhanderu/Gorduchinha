@@ -20,13 +20,13 @@ func (r champRepo) FindAll() ([]entity.Champ, error) {
 		;
 	`
 
-	champs := make([]entity.Champ, 0)
 	rows, err := r.ex.Query(query)
 	if err != nil {
 		return nil, errors.WithStack(parseError(err))
 	}
 	defer rows.Close()
 
+	champs := make([]entity.Champ, 0)
 	for rows.Next() {
 
 		var champ entity.Champ

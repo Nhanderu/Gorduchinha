@@ -58,13 +58,9 @@ func (s scraperService) ScrapeAndUpdate() error {
 		return errors.WithStack(err)
 	}
 
-	for _, team := range teams {
-		for _, trophy := range team.Trophies {
-			err := tx.Trophy().Insert(team.ID, trophy)
-			if err != nil {
-				return errors.WithStack(err)
-			}
-		}
+	err = tx.Trophy().BulkInsertByTeams(teams)
+	if err != nil {
+		return errors.WithStack(err)
 	}
 
 	err = tx.Commit()

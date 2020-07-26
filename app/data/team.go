@@ -21,13 +21,13 @@ func (r teamRepo) FindAll() ([]entity.Team, error) {
 		;
 	`
 
-	teams := make([]entity.Team, 0)
 	rows, err := r.ex.Query(query)
 	if err != nil {
 		return nil, errors.WithStack(parseError(err))
 	}
 	defer rows.Close()
 
+	teams := make([]entity.Team, 0)
 	for rows.Next() {
 
 		var team entity.Team
