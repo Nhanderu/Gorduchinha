@@ -22,6 +22,10 @@ const (
 	// format.
 	ErrorCodeInvalidRequestBody = "invalid-request-body"
 
+	// ErrorCodeRequestBodyTooLarge means that the entity passed through the request is
+	// too large.
+	ErrorCodeRequestBodyTooLarge = "request-body-too-large"
+
 	// ErrorCodeEntityNotFound means that a resource entity was not found.
 	ErrorCodeEntityNotFound = "entity-not-found"
 
@@ -84,6 +88,12 @@ func NewErrorTooManyRequests() AppError {
 func NewErrorInvalidRequestBody() AppError {
 	return AppError{
 		Code: ErrorCodeInvalidRequestBody,
+	}
+}
+
+func NewErrorRequestBodyTooLarge() AppError {
+	return AppError{
+		Code: ErrorCodeRequestBodyTooLarge,
 	}
 }
 

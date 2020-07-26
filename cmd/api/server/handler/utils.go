@@ -17,11 +17,15 @@ const (
 
 var (
 	errorStatusMap = map[string]int{
-		constant.ErrorCodePageNotFound:    http.StatusNotFound,
-		constant.ErrorCodeEntityNotFound:  http.StatusNotFound,
-		constant.ErrorCodeCacheMiss:       http.StatusInternalServerError,
-		constant.ErrorCodeTooManyRequests: http.StatusTooManyRequests,
-		constant.ErrorCodeInternal:        http.StatusInternalServerError,
+		constant.ErrorCodePageNotFound:        http.StatusNotFound,
+		constant.ErrorCodeMethodNotAllowed:    http.StatusMethodNotAllowed,
+		constant.ErrorCodeCacheMiss:           http.StatusInternalServerError,
+		constant.ErrorCodeTooManyRequests:     http.StatusTooManyRequests,
+		constant.ErrorCodeInvalidRequestBody:  http.StatusBadRequest,
+		constant.ErrorCodeRequestBodyTooLarge: http.StatusRequestEntityTooLarge,
+		constant.ErrorCodeEntityNotFound:      http.StatusNotFound,
+		constant.ErrorCodeInvalidQueryKey:     http.StatusForbidden,
+		constant.ErrorCodeInternal:            http.StatusInternalServerError,
 	}
 )
 
