@@ -15,7 +15,10 @@ func Read(env string) (Config, error) {
 
 	viper.AutomaticEnv()
 	viper.BindEnv("server.port", "PORT")
-	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+	viper.SetEnvKeyReplacer(strings.NewReplacer(
+		".", "_",
+		"-", "_",
+	))
 
 	err := viper.ReadInConfig()
 	if err != nil {
