@@ -30,7 +30,7 @@ func Logger(log logger.Logger) RequestMiddleware {
 				"query":      string(ctx.URI().QueryString()),
 				"user-agent": string(ctx.UserAgent()),
 				"referer":    string(ctx.Referer()),
-				"remote-ip":  string(ctx.RemoteIP()),
+				"remote-ip":  ctx.RemoteIP().String(),
 
 				"status":    ctx.Response.StatusCode(),
 				"bytes-in":  ctx.Request.Header.ContentLength(),
