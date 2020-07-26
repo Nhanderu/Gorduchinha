@@ -1,7 +1,6 @@
 package service
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/Nhanderu/gorduchinha/app/contract"
@@ -29,7 +28,7 @@ func (s champService) FindAll() ([]entity.Champ, error) {
 
 	var champs []entity.Champ
 
-	cacheKey := "champ-find-all"
+	cacheKey := "champ"
 	err := s.cache.GetJSON(cacheKey, &champs)
 	if err != nil {
 
@@ -47,9 +46,9 @@ func (s champService) FindAll() ([]entity.Champ, error) {
 
 func (s champService) FindBySlug(slug string) (entity.Champ, error) {
 
-	var champ entity.Champ
+	cacheKey := "champ:slug:" + slug
 
-	cacheKey := fmt.Sprintf("champ-find-by-slug-%s", slug)
+	var champ entity.Champ
 	err := s.cache.GetJSON(cacheKey, &champ)
 	if err != nil {
 

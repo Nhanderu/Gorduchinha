@@ -1,7 +1,6 @@
 package service
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/Nhanderu/gorduchinha/app/contract"
@@ -29,7 +28,7 @@ func (s teamService) FindAll() ([]entity.Team, error) {
 
 	var teams []entity.Team
 
-	cacheKey := "team-find-all"
+	cacheKey := "team"
 	err := s.cache.GetJSON(cacheKey, &teams)
 	if err != nil {
 
@@ -54,9 +53,9 @@ func (s teamService) FindAll() ([]entity.Team, error) {
 
 func (s teamService) FindByAbbr(abbr string) (entity.Team, error) {
 
-	var team entity.Team
+	cacheKey := "team:abbr:" + abbr
 
-	cacheKey := fmt.Sprintf("team-find-by-abbr-%s", abbr)
+	var team entity.Team
 	err := s.cache.GetJSON(cacheKey, &team)
 	if err != nil {
 
