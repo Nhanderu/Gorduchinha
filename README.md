@@ -1,5 +1,8 @@
 # Gorduchinha
 
+[![License][badge-1-img]][badge-1-link]
+[![Go Report Card][badge-2-img]][badge-2-link]
+
 The Brazilian football teams API and scraper running @
 [gorduchinha.herokuapp.com/api][1]!
 
@@ -81,4 +84,9 @@ This project code is in the public domain. See the [LICENSE file][3].
 
 [1]: http://gorduchinha.herokuapp.com/api/
 [2]: ./static/graphql/schema.gql
-[3]: https://github.com/Nhanderu/gorduchinha/blob/master/LICENSE
+[3]: ./LICENSE
+
+[badge-1-img]: https://img.shields.io/github/license/Nhanderu/gorduchinha?style=flat-square
+[badge-1-link]: https://github.com/Nhanderu/gorduchinha/blob/master/LICENSE
+[badge-2-img]: https://goreportcard.com/badge/github.com/Nhanderu/gorduchinha?style=flat-square
+[badge-2-link]: https://goreportcard.com/report/github.com/Nhanderu/gorduchinha
