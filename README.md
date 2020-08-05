@@ -82,6 +82,12 @@ To run it, execute `go run ./cmd/job-scraper`.
 
 This project code is in the public domain. See the [LICENSE file][3].
 
+### Contribution
+
+Unless you explicitly state otherwise, any contribution intentionally submitted
+for inclusion in the work by you shall be in the public domain, without any
+additional terms or conditions.
+
 [1]: http://gorduchinha.herokuapp.com/api/
 [2]: ./static/graphql/schema.gql
 [3]: ./LICENSE
