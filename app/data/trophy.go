@@ -147,8 +147,7 @@ func (r trophyRepo) BulkInsertByTeams(teams []entity.Team) error {
 
 func (r trophyRepo) Delete() error {
 	const query = `
-		UPDATE tb_trophy
-			SET deleted_at = NOW()
+		DELETE FROM tb_trophy
 			WHERE deleted_at IS NULL
 		;
 	`
