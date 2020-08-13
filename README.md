@@ -58,7 +58,8 @@ Current possible values:
 
 ### `PUT /v1/trophies`
 
-Executes scraper job that updates all trophies. It requires a secret key.
+Executes scraper job that updates all trophies. It requires a secret
+key.
 
 ## Code structure
 
@@ -84,9 +85,9 @@ This project code is in the public domain. See the [LICENSE file][3].
 
 ### Contribution
 
-Unless you explicitly state otherwise, any contribution intentionally submitted
-for inclusion in the work by you shall be in the public domain, without any
-additional terms or conditions.
+Unless you explicitly state otherwise, any contribution intentionally
+submitted for inclusion in the work by you shall be in the public
+domain, without any additional terms or conditions.
 
 [1]: http://gorduchinha.herokuapp.com/api/
 [2]: ./static/graphql/schema.gql
