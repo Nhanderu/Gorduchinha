@@ -4,7 +4,7 @@ module github.com/Nhanderu/gorduchinha
 go 1.16
 
 require (
-	github.com/Nhanderu/fastcors v0.1.0
+	github.com/Nhanderu/fastcors v0.1.1
 	github.com/andybalholm/cascadia v1.2.0
 	github.com/fasthttp/router v1.3.7
 	github.com/go-redis/redis/v8 v8.6.0
