@@ -240,9 +240,9 @@ func (s scraperService) scrapeNationalLeague1Div() (map[string][]int, error) {
 	)
 
 	var (
-		lines = cascadia.MustCompile("h3:has(#Por_clube) + table > tbody > tr:not(:first-child)")
+		lines = cascadia.MustCompile("h3:has(#Por_clube) + table > tbody > tr")
 		team  = cascadia.MustCompile("td:first-child > span > a:last-child")
-		years = cascadia.MustCompile("td:nth-child(6)")
+		years = cascadia.MustCompile("td:nth-child(2)")
 	)
 
 	trophies, err := s.scrape(url, lines, team, years)
@@ -400,7 +400,7 @@ func (s scraperService) scrapeSPStateCup() (map[string][]int, error) {
 	)
 
 	var (
-		lines = cascadia.MustCompile("h3:has(#Títulos_por_clube) + table > tbody > tr:not(:first-child)")
+		lines = cascadia.MustCompile("h4:has(#Por_clube) + table > tbody > tr:not(:first-child)")
 		team  = cascadia.MustCompile("td:first-child > b > a:last-child")
 		years = cascadia.MustCompile("td:nth-child(3)")
 	)
@@ -458,7 +458,7 @@ func (s scraperService) scrapeRSStateCup() (map[string][]int, error) {
 	)
 
 	var (
-		lines = cascadia.MustCompile("h3:has(#Por_equipe) + table > tbody > tr:not(:first-child)")
+		lines = cascadia.MustCompile("h3:has(#Por_clube) + table > tbody > tr:not(:first-child)")
 		team  = cascadia.MustCompile("td:first-child > b > a:last-child")
 		years = cascadia.MustCompile("td:nth-child(3)")
 	)
