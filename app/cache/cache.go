@@ -1,13 +1,14 @@
 package cache
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"time"
 
 	"github.com/Nhanderu/gorduchinha/app/constant"
 	"github.com/Nhanderu/gorduchinha/app/contract"
-	"github.com/go-redis/redis/v7"
+	"github.com/go-redis/redis/v8"
 	"github.com/pkg/errors"
 )
 
@@ -51,7 +52,7 @@ func (r redisCache) Prefix() string {
 
 func (r redisCache) Get(key string) ([]byte, error) {
 
-	val, err := r.redis.Get(r.buildKey(key)).Bytes()
+	val, err := r.redis.Get(context.Background(), r.buildKey(key)).Bytes()
 	if err == redis.Nil {
 		return val, errors.WithStack(constant.NewErrorCacheMiss())
 	}
@@ -64,7 +65,7 @@ func (r redisCache) Get(key string) ([]byte, error) {
 
 func (r redisCache) Set(key string, data []byte) error {
 
-	err := r.redis.Set(r.buildKey(key), data, r.defaultExpiration).Err()
+	err := r.redis.Set(context.Background(), r.buildKey(key), data, r.defaultExpiration).Err()
 	if err != nil {
 		return errors.WithStack(err)
 	}
@@ -104,7 +105,7 @@ func (r redisCache) SetJSON(key string, data interface{}) error {
 
 func (r redisCache) GetExpiration(key string) (time.Duration, error) {
 
-	expiration, err := r.redis.TTL(r.buildKey(key)).Result()
+	expiration, err := r.redis.TTL(context.Background(), r.buildKey(key)).Result()
 	if err != nil {
 		return 0, errors.WithStack(err)
 	}
@@ -114,7 +115,7 @@ func (r redisCache) GetExpiration(key string) (time.Duration, error) {
 
 func (r redisCache) SetExpiration(key string, expiration time.Duration) error {
 
-	err := r.redis.Expire(r.buildKey(key), expiration).Err()
+	err := r.redis.Expire(context.Background(), r.buildKey(key), expiration).Err()
 	if err != nil {
 		return errors.WithStack(err)
 	}
@@ -124,7 +125,7 @@ func (r redisCache) SetExpiration(key string, expiration time.Duration) error {
 
 func (r redisCache) Invalidate(key string) error {
 
-	err := r.redis.Del(r.buildKey(key)).Err()
+	err := r.redis.Del(context.Background(), r.buildKey(key)).Err()
 	if err == redis.Nil {
 		return nil
 	}
@@ -137,7 +138,7 @@ func (r redisCache) Invalidate(key string) error {
 
 func (r redisCache) CleanAll() error {
 
-	keys, err := r.redis.Keys(r.buildKey("*")).Result()
+	keys, err := r.redis.Keys(context.Background(), r.buildKey("*")).Result()
 	if err == redis.Nil {
 		return nil
 	}
@@ -146,7 +147,7 @@ func (r redisCache) CleanAll() error {
 	}
 
 	if len(keys) > 0 {
-		err = r.redis.Del(keys...).Err()
+		err = r.redis.Del(context.Background(), keys...).Err()
 	}
 	if err == redis.Nil {
 		return nil

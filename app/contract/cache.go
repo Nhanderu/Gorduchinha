@@ -3,7 +3,7 @@ package contract
 import (
 	"time"
 
-	"github.com/go-redis/redis/v7"
+	"github.com/go-redis/redis/v8"
 )
 
 type CacheManager interface {
