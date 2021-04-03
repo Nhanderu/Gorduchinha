@@ -8,14 +8,13 @@ import (
 	"os/signal"
 
 	"github.com/Nhanderu/gorduchinha/app/cache"
-	"github.com/Nhanderu/gorduchinha/app/config"
 	"github.com/Nhanderu/gorduchinha/app/contract"
 	"github.com/Nhanderu/gorduchinha/app/data"
 	"github.com/Nhanderu/gorduchinha/app/logger"
 )
 
 type App struct {
-	Config       config.Config
+	Config       Config
 	Logger       logger.Logger
 	DataManager  contract.DataManager
 	CacheManager contract.CacheManager
@@ -24,39 +23,29 @@ type App struct {
 
 func New(env string) App {
 
-	cfg, err := config.Read(env)
-	endAsErr(err, "Could not read configuration file.", os.Stdout, os.Stderr)
+	cfg, err := ReadConfig(env)
+	endAsErr(err, "Could not read configuration values.", os.Stdout, os.Stderr)
 
 	log, err := logger.New(
 		cfg.App.Name,
 		cfg.App.Debug,
-		cfg.Log.Path,
 	)
 	endAsErr(err, "Could not create logging structure.", os.Stdout, os.Stderr)
 
-	log.Infof("Connecting to the database at %s:%d.", cfg.DB.Host, cfg.DB.Port)
-	db, err := data.Connect(
-		cfg.DB.User,
-		cfg.DB.Pass,
-		cfg.DB.Name,
-		cfg.DB.Host,
-		cfg.DB.Port,
-	)
+	db, err := data.Connect(cfg.DB.URL)
 	endAsErr(err, "Could not connect to database.", log.InfoWriter(), log.ErrorWriter())
 	atInterruption(func() {
 		log.Infof("Closing DB Connection.")
 		db.Close()
 	})
 
-	log.Infof("Connecting to the cache server at %s:%d.", cfg.Cache.Host, cfg.Cache.Port)
-	cache := cache.New(
-		cfg.Cache.Host,
-		cfg.Cache.Port,
+	cache, err := cache.New(
+		cfg.Cache.URL,
 		cfg.Cache.DB,
-		cfg.Cache.Pass,
 		cfg.Cache.Prefix,
 		cfg.Cache.DefaultExpiration,
 	)
+	endAsErr(err, "Could not connect to cache.", log.InfoWriter(), log.ErrorWriter())
 
 	httpClient := &http.Client{Timeout: cfg.HTTPClient.Timeout}
 
@@ -67,7 +56,6 @@ func New(env string) App {
 		CacheManager: cache,
 		HTTPClient:   httpClient,
 	}
-
 }
 
 func (app App) AtInterruption(fn func()) {

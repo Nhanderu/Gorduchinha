@@ -4,7 +4,6 @@ import (
 	"io"
 	"os"
 
-	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 )
 
@@ -12,24 +11,7 @@ type logrusLogger struct {
 	entry *logrus.Entry
 }
 
-func New(appName string, debug bool, filepath string) (Logger, error) {
-
-	shouldColor := true
-	if filepath != "" {
-
-		shouldColor = false
-
-		file, err := os.Create(filepath)
-		if err != nil {
-			return logrusLogger{}, errors.WithStack(err)
-		}
-
-		logrus.SetOutput(file)
-	}
-
-	formatter := new(coloredJSONFormatter)
-	formatter.shouldColor = shouldColor
-	logrus.SetFormatter(formatter)
+func New(appName string, debug bool) (Logger, error) {
 
 	logrus.SetLevel(logrus.InfoLevel)
 	if debug {

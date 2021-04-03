@@ -2,17 +2,10 @@ app:
   name: "gorduchinha"
 
 db:
-  host:
-  port:
-  user:
-  pass:
-  name:
+  url:
 
 cache:
-  host:
-  port:
-  user:
-  pass:
+  url:
   db: 0
   prefix: "gorduchinha"
   default-expiration: "24h"
@@ -28,9 +21,6 @@ server:
     limit: 10
   route-keys:
     update-trophies:
-
-log:
-  log-to-file: false
 
 http-client:
   timeout: "60s"

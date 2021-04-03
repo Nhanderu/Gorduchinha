@@ -3,7 +3,6 @@ package cache
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"time"
 
 	"github.com/Nhanderu/gorduchinha/app/constant"
@@ -19,23 +18,23 @@ type redisCache struct {
 }
 
 func New(
-	host string,
-	port int,
+	url string,
 	db int,
-	pass string,
 	prefix string,
 	defaultExpiration time.Duration,
-) contract.CacheManager {
+) (contract.CacheManager, error) {
+
+	opt, err := redis.ParseURL(url)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+	opt.DB = db
 
 	return redisCache{
-		redis: redis.NewClient(&redis.Options{
-			Addr:     fmt.Sprintf("%s:%d", host, port),
-			Password: pass,
-			DB:       db,
-		}),
+		redis:             redis.NewClient(opt),
 		prefix:            prefix,
 		defaultExpiration: defaultExpiration,
-	}
+	}, nil
 }
 
 func (r redisCache) buildKey(key string) string {

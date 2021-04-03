@@ -1,4 +1,4 @@
-package config
+package app
 
 import (
 	"strings"
@@ -8,13 +8,15 @@ import (
 	"github.com/spf13/viper"
 )
 
-func Read(env string) (Config, error) {
+func ReadConfig(env string) (Config, error) {
 
 	viper.AddConfigPath("static/config")
 	viper.SetConfigName(env)
 
 	viper.AutomaticEnv()
 	viper.BindEnv("server.port", "PORT")
+	viper.BindEnv("db.url", "DATABASE_URL")
+	viper.BindEnv("cache.url", "HEROKU_REDIS_AQUA_TLS_URL")
 	viper.SetEnvKeyReplacer(strings.NewReplacer(
 		".", "_",
 		"-", "_",
@@ -39,7 +41,6 @@ type Config struct {
 	DB         DBConfig         `mapstructure:"db"`
 	Cache      CacheConfig      `mapstructure:"cache"`
 	Server     ServerConfig     `mapstructure:"server"`
-	Log        LogConfig        `mapstructure:"log"`
 	HTTPClient HTTPClientConfig `mapstructure:"http-client"`
 }
 
@@ -49,18 +50,11 @@ type AppConfig struct {
 }
 
 type DBConfig struct {
-	Host string `mapstructure:"host"`
-	Port int    `mapstructure:"port"`
-	User string `mapstructure:"user"`
-	Pass string `mapstructure:"pass"`
-	Name string `mapstructure:"name"`
+	URL string `mapstructure:"url"`
 }
 
 type CacheConfig struct {
-	Host              string        `mapstructure:"host"`
-	Port              int           `mapstructure:"port"`
-	User              string        `mapstructure:"user"`
-	Pass              string        `mapstructure:"pass"`
+	URL               string        `mapstructure:"url"`
 	DB                int           `mapstructure:"db"`
 	Prefix            string        `mapstructure:"prefix"`
 	DefaultExpiration time.Duration `mapstructure:"default-expiration"`
@@ -85,11 +79,6 @@ type ServerRateLimitConfig struct {
 
 type ServerRouteKeysConfig struct {
 	UpdateTrophies string `mapstructure:"update-trophies"`
-}
-
-type LogConfig struct {
-	LogToFile bool   `mapstructure:"log-to-file"`
-	Path      string `mapstructure:"path"`
 }
 
 type HTTPClientConfig struct {

@@ -34,7 +34,7 @@ func Run(
 		middleware.Logger(log),
 		middleware.BodyLimit(),
 		middleware.CORS(authClientsURLs),
-		middleware.RateLimit(cache, rateLimitPeriod, rateLimitLimit),
+		// middleware.RateLimit(cache, rateLimitPeriod, rateLimitLimit),
 	)
 
 	open.handle(http.MethodGet, "/health", handler.HealthCheck())
