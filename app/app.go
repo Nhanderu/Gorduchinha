@@ -8,13 +8,14 @@ import (
 	"os/signal"
 
 	"github.com/Nhanderu/gorduchinha/app/cache"
+	"github.com/Nhanderu/gorduchinha/app/config"
 	"github.com/Nhanderu/gorduchinha/app/contract"
 	"github.com/Nhanderu/gorduchinha/app/data"
 	"github.com/Nhanderu/gorduchinha/app/logger"
 )
 
 type App struct {
-	Config       Config
+	Config       config.Config
 	Logger       logger.Logger
 	DataManager  contract.DataManager
 	CacheManager contract.CacheManager
@@ -23,7 +24,7 @@ type App struct {
 
 func New(env string) App {
 
-	cfg, err := ReadConfig(env)
+	cfg, err := config.ReadConfig(env)
 	endAsErr(err, "Could not read configuration values.", os.Stdout, os.Stderr)
 
 	log, err := logger.New(
@@ -34,6 +35,7 @@ func New(env string) App {
 
 	db, err := data.Connect(cfg.DB.URL)
 	endAsErr(err, "Could not connect to database.", log.InfoWriter(), log.ErrorWriter())
+
 	atInterruption(func() {
 		log.Infof("Closing DB Connection.")
 		db.Close()
@@ -58,11 +60,11 @@ func New(env string) App {
 	}
 }
 
-func (app App) AtInterruption(fn func()) {
+func (App) AtInterruption(fn func()) {
 	atInterruption(fn)
 }
 
-func (app App) EndAsErr(err error, message string, infow io.Writer, errorw io.Writer) {
+func (App) EndAsErr(err error, message string, infow io.Writer, errorw io.Writer) {
 	endAsErr(err, message, infow, errorw)
 }
 
